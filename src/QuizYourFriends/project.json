@@ -1,10 +1,14 @@
 ﻿{
   "dependencies": {
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
-    
+
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
-    "Microsoft.Extensions.Logging.Console": "1.0.0"
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.AspNetCore.StaticFiles": "1.0.0",
+    "Microsoft.AspNet.SignalR": "2.2.1",
+    "Microsoft.AspNet.SignalR.Owin": "1.2.2",
+    "Microsoft.AspNetCore.Owin": "1.0.0"
   },
 
   "tools": {
@@ -23,6 +27,8 @@
   "publishOptions": {
     "include": [
       "wwwroot",
+      "**/*.cshtml",
+      "appsettings.json",
       "web.config"
     ]
   },

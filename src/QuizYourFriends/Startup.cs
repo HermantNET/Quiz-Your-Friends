@@ -28,10 +28,11 @@ namespace QuizYourFriends
                 app.UseDeveloperExceptionPage();
             }
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseOwin();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
+            app.UseSignalR();
         }
     }
 }

@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <p id="hello">Kappa</p>
+
+    <script src="http://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+    <script src="scripts/jquery.signalR-2.2.1.js"></script>
+    <script src="signalr/hubs"></script>
+    <script type="text/javascript">
+        var quizHub = $.connection.quizHub;
+
+        quizHub.client.hello = function (msg) {
+            $('#hello').text(msg);
+        };
+
+        $.connection.hub.start().done(function () {
+            quizHub.invoke('Hello');
+        });
+    </script>
+</body>
+</html>
