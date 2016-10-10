@@ -6,7 +6,7 @@ using Microsoft.AspNet.SignalR;
 
 namespace QuizYourFriends.Hubs
 {
-    public class QuizHub : Hub
+    public partial class QuizHub : Hub
     {
         public override Task OnConnected()
         {
