@@ -18,6 +18,12 @@ namespace QuizYourFriends.Hubs
             }
             else
             {
+                // 
+                if (IsInRoom())
+                {
+                    LeaveQuiz();
+                }
+
                 Groups.Add(Context.ConnectionId, name);
                 Quizzes.Add(new Quiz(name, max, GetCurrentPlayer()));
                 Clients.Caller.message("Room '" + name + "' created!");
@@ -32,16 +38,24 @@ namespace QuizYourFriends.Hubs
             // Check if the quiz has started
             if (exists && !Quizzes.Find(q => q.Name == name).Started)
             {
-                // Leave room if already in another quiz
-                if (IsInRoom())
-                    LeaveQuiz();
-
-                var player = GetCurrentPlayer();
                 var quiz = Quizzes.Find(q => q.Name == name);
 
-                await Groups.Add(Context.ConnectionId, name);
-                quiz.Players.Add(player);
-                Clients.Group(quiz.Name).message(player.Name + " joined the room");
+                if (quiz.MaxPlayers > quiz.Players.Count)
+                {
+                    // Leave room if already in another quiz
+                    if (IsInRoom())
+                        LeaveQuiz();
+
+                    var player = GetCurrentPlayer();
+
+                    await Groups.Add(Context.ConnectionId, name);
+                    quiz.Players.Add(player);
+                    Clients.Group(quiz.Name).message(player.Name + " joined the room");
+                }
+                else
+                {
+                    Clients.Caller.message("Player count reached");
+                }
             }
             // Quiz has already started
             else if (exists)
