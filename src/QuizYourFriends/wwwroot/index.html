@@ -7,6 +7,8 @@
 <body>
     <ul id="message"></ul>
     <button id="ready">Ready</button>
+    <button id="join">Join</button>
+    <button id="create">Create</button>
 
     <script src="http://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
     <script src="scripts/jquery.signalR-2.2.1.js"></script>
@@ -20,7 +22,14 @@
 
         $.connection.hub.qs = { name: prompt("Display name: ") };
         $.connection.hub.start().done(function () {
-            quizHub.invoke('CreateQuiz', prompt("Quiz name: "), 3);
+            $('#create').click(function () {
+                quizHub.invoke('CreateQuiz', prompt("Room name: "), 3);
+            });
+
+            $('#join').click(function () {
+                quizHub.invoke('JoinQuiz', prompt("Room name: "));
+            });
+
             $('#ready').click(function () {
                 quizHub.invoke('ReadyUp');
             });

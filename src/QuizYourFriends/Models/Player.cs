@@ -10,7 +10,7 @@
         public Player(string conId, string name)
         {
             ConnectionId = conId;
-            Name = name.Trim() == "" ? "Anonymous" : name.Trim();
+            Name = name;
             Score = 0;
             Ready = false;
         }

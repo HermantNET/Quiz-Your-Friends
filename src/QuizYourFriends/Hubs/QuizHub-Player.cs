@@ -21,5 +21,12 @@ namespace QuizYourFriends.Hubs
         {
             return Quizzes.Find(quiz => quiz.Players.Any(p => p.ConnectionId == Context.ConnectionId));
         }
+
+        private bool IsInRoom()
+        {
+            if (GetCurrentQuiz() == null)
+                return false;
+            return true;
+        }
     }
 }

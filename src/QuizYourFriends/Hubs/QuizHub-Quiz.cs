@@ -12,9 +12,16 @@ namespace QuizYourFriends.Hubs
     {
         public void CreateQuiz(string name, int max)
         {
-            Groups.Add(Context.ConnectionId, name);
-            Quizzes.Add(new Quiz(name, max, GetCurrentPlayer()));
-            Clients.Caller.message("Room '" + name + "' created!");
+            if (name == null || name.Trim() == "")
+            {
+                Clients.Caller.message("Room creation failed: Name must be at least 1 character");
+            }
+            else
+            {
+                Groups.Add(Context.ConnectionId, name);
+                Quizzes.Add(new Quiz(name, max, GetCurrentPlayer()));
+                Clients.Caller.message("Room '" + name + "' created!");
+            }
         }
 
         public async void JoinQuiz(string name)
@@ -25,6 +32,10 @@ namespace QuizYourFriends.Hubs
             // Check if the quiz has started
             if (exists && !Quizzes.Find(q => q.Name == name).Started)
             {
+                // Leave room if already in another quiz
+                if (IsInRoom())
+                    LeaveQuiz();
+
                 var player = GetCurrentPlayer();
                 var quiz = Quizzes.Find(q => q.Name == name);
 
@@ -49,9 +60,17 @@ namespace QuizYourFriends.Hubs
             var player = GetCurrentPlayer();
             var quiz = GetCurrentQuiz();
 
-            quiz.Players.Remove(player);
-            Clients.Group(quiz.Name).message(player.Name + " left the room");
-            Groups.Remove(Context.ConnectionId, quiz.Name);
+            // Delete Quiz room if no players are in it
+            if (quiz.Players.Count == 0)
+            {
+                Quizzes.Remove(quiz);
+            }
+            else
+            {
+                quiz.Players.Remove(player);
+                Clients.Group(quiz.Name).message(player.Name + " left the room");
+                Groups.Remove(Context.ConnectionId, quiz.Name);
+            }
         }
 
         private void StartQuiz()
@@ -77,11 +96,18 @@ namespace QuizYourFriends.Hubs
             var player = GetCurrentPlayer();
             var quiz = GetCurrentQuiz();
 
-            player.Ready = !player.Ready;
-            Clients.Group(quiz.Name).message(player.Name + ((player.Ready == true) ? " is ready" : " is not ready"));
-            if (quiz.Players.Count() > 1 && quiz.Players.Select(p => p.Ready).Count() == quiz.Players.Count())
+            if (quiz == null)
             {
-                StartQuiz();
+                Clients.Caller.message("You need to be in a room to ready up");
+            }
+            else
+            {
+                player.Ready = !player.Ready;
+                Clients.Group(quiz.Name).message(player.Name + ((player.Ready == true) ? " is ready" : " is not ready"));
+                if (quiz.Players.Count() > 1 && quiz.Players.Select(p => p.Ready).Count() == quiz.Players.Count())
+                {
+                    StartQuiz();
+                }
             }
         }
     }

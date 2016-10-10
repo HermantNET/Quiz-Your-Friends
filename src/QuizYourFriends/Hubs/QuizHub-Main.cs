@@ -16,7 +16,11 @@ namespace QuizYourFriends.Hubs
         // On Connection, add player to ConnectedPlayers List
         public override Task OnConnected()
         {
-            Player player = new Player(Context.ConnectionId, Context.QueryString["name"]);
+            // If name is empty or null, assign dynamic anonymous identity
+            string name = Context.QueryString["name"];
+            name = name.Trim() == "" || name == null ? "Anon" + ConnectedPlayers.Count + 1 : name.Trim();
+
+            Player player = new Player(Context.ConnectionId, name);
             ConnectedPlayers.Add(player);
             return base.OnConnected();
         }
@@ -24,13 +28,12 @@ namespace QuizYourFriends.Hubs
         // On Disconnect, remove player from ConnectedPlayers List
         public override Task OnDisconnected(bool stopCalled)
         {
+            if (IsInRoom())
+            {
+                LeaveQuiz();
+            }
             ConnectedPlayers.Remove(GetCurrentPlayer());
             return base.OnDisconnected(stopCalled);
-        }
-
-        public void Hello()
-        {
-            Clients.All.hello("Hello, " + GetCurrentPlayer().Name + "!");
         }
     }
 }
