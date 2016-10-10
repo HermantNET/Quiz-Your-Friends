@@ -4,7 +4,7 @@ namespace QuizYourFriends.Models
 {
     public class Question
     {
-        public Player QuestionBy { get; set; }
+        public string QuestionBy { get; set; }
 
         private string _statement = string.Empty;
         public string Statement { get { return _statement; } set { _statement = value.Trim(); } }
@@ -21,6 +21,15 @@ namespace QuizYourFriends.Models
                 string[] result = (value.Length == 3) ? value : new string[] { "Error", "Error", "Error" };
                 _wrongAnswers = result.Select(q => q.Trim()).ToArray();
             }
+        }
+
+
+        public Question(string conId, string question, string correct, string[] wrong)
+        {
+            QuestionBy = conId;
+            Statement = question;
+            CorrectAnswer = correct;
+            WrongAnswers = wrong;
         }
     }
 }
