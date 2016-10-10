@@ -17,6 +17,7 @@
             $('#hello').text(msg);
         };
 
+        $.connection.hub.qs = { name: prompt("Display name: ") };
         $.connection.hub.start().done(function () {
             quizHub.invoke('Hello');
         });

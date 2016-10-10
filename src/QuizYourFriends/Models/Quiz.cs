@@ -8,5 +8,14 @@ namespace QuizYourFriends.Models
         public int MaxPlayers { get; set; }
         public List<Player> Players { get; set; }
         public List<Question> Questions { get; set; }
+
+        public Quiz(string quizName, int maxPlayers)
+        {
+            QuizName = quizName.Trim();
+            MaxPlayers = maxPlayers;
+            Players = new List<Player>();
+            Players.Capacity = maxPlayers;
+            Questions = new List<Question>();
+        }
     }
 }
