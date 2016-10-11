@@ -20,12 +20,15 @@ namespace QuizYourFriends.Hubs
                 ));
         }
 
-        private string[] ScrambleAnswers(string correct, string[] wrong)
+        public static string[] ScrambleAnswers(string correct, string[] wrong)
         {
-            return new string[] {"Wallah", "Yallah", "Inshallah", "Mishmallah"};
+            Random rand = new Random(4329);
+            var result = wrong.ToList();
+            result.Insert(rand.Next(0, 4), correct);
+            return result.ToArray();
         }
 
-        public void Question()
+        protected void Question(Question ques)
         {
 
         }

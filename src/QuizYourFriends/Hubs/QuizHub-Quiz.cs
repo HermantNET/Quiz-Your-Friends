@@ -75,7 +75,11 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz();
 
             // Delete Quiz room if no players are in it
-            if (quiz.Players.Count == 0)
+            if (quiz == null)
+            {
+                Clients.Caller.message("You are not in a room");
+            }
+            else if (quiz.Players.Count == 0)
             {
                 Quizzes.Remove(quiz);
             }
@@ -92,7 +96,7 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz();
 
             quiz.Started = true;
-            Clients.Group(quiz.Name).quizStarted(true);
+            Clients.Group(quiz.Name).quizStarted();
         }
 
         private void EndQuiz()
