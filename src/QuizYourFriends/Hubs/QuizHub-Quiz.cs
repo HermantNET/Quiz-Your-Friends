@@ -86,8 +86,9 @@ namespace QuizYourFriends.Hubs
             else
             {
                 quiz.Players.Remove(player);
-                Clients.Group(quiz.Name).message(player.Name + " left the room");
                 Groups.Remove(Context.ConnectionId, quiz.Name);
+                Clients.Group(quiz.Name).message(player.Name + " left the room");
+                Clients.Caller("Left room " + quiz.Name);
             }
         }
 

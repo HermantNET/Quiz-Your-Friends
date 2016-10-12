@@ -1,6 +1,5 @@
 ﻿var React = require('react');
 var ReactDOM = require('react-dom');
-var QuizGame = require('./Containers/QuizGameContainer.jsx');
-var Routes = require('./Routes.js')
+var QuizGameContainer = require('./Containers/QuizGameContainer.jsx');
 
-ReactDOM.render(<QuizGame />, document.getElementById('app'));
+ReactDOM.render(<QuizGameContainer />, document.getElementById('app'));
