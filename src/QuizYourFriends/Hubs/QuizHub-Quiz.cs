@@ -26,7 +26,7 @@ namespace QuizYourFriends.Hubs
 
                 Groups.Add(Context.ConnectionId, name);
                 Quizzes.Add(new Quiz(name, max, GetCurrentPlayer()));
-                Clients.Caller.message("Room '" + name + "' created!");
+                Clients.Caller.message("Room '" + name + "' created");
             }
         }
 

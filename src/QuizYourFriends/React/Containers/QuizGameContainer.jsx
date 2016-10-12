@@ -1,6 +1,7 @@
 ﻿var React = require('react');
 var QuizMenu = require('.././Presentational/QuizMenu.jsx');
 var ServerRoutes = require('../SignalR-ServerRoutes.js');
+var MessageList = require('.././Presentational/MessageList.jsx');
 
 var QuizGameContainer = React.createClass({
     getInitialState: function () {
@@ -12,7 +13,8 @@ var QuizGameContainer = React.createClass({
             room: 'none',
             playersInLobby: [{ name: 'none', score: 0 }],
             maxPlayers: 1,
-            name: prompt("Display name: ")
+            name: prompt("Display name: "),
+            messages: []
         }
     },
     componentWillMount: function() {
@@ -22,6 +24,14 @@ var QuizGameContainer = React.createClass({
                 connected: true
             });
         }.bind(this));
+    },
+    componentDidMount: function () {
+        this.state.hub.client.message = function (msg) {
+            console.log(msg);
+            this.setState({
+                messages: this.state.messages.concat(msg)
+            });
+        }.bind(this);
     },
     createQuiz: function () {
         ServerRoutes.CreateQuiz(this.state.hub);
@@ -38,7 +48,12 @@ var QuizGameContainer = React.createClass({
             view = <p>error</p>;
         }
 
-        return view;
+        return (
+            <div>
+                {view}
+                <MessageList messages={this.state.messages} />
+            </div>
+            );
     }
 });
 

@@ -22,6 +22,7 @@ namespace QuizYourFriends.Hubs
 
             Player player = new Player(Context.ConnectionId, name);
             ConnectedPlayers.Add(player);
+            Clients.Caller.message("Connected");
             return base.OnConnected();
         }
 

@@ -21947,6 +21947,7 @@
 	var React = __webpack_require__(/*! react */ 1);
 	var QuizMenu = __webpack_require__(/*! .././Presentational/QuizMenu.jsx */ 173);
 	var ServerRoutes = __webpack_require__(/*! ../SignalR-ServerRoutes.js */ 174);
+	var MessageList = __webpack_require__(/*! .././Presentational/MessageList.jsx */ 175);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -21960,7 +21961,8 @@
 	            room: 'none',
 	            playersInLobby: [{ name: 'none', score: 0 }],
 	            maxPlayers: 1,
-	            name: prompt("Display name: ")
+	            name: prompt("Display name: "),
+	            messages: []
 	        };
 	    },
 	    componentWillMount: function componentWillMount() {
@@ -21970,6 +21972,14 @@
 	                connected: true
 	            });
 	        }.bind(this));
+	    },
+	    componentDidMount: function componentDidMount() {
+	        this.state.hub.client.message = function (msg) {
+	            console.log(msg);
+	            this.setState({
+	                messages: this.state.messages.concat(msg)
+	            });
+	        }.bind(this);
 	    },
 	    createQuiz: function createQuiz() {
 	        ServerRoutes.CreateQuiz(this.state.hub);
@@ -21992,7 +22002,12 @@
 	            );
 	        }
 	
-	        return view;
+	        return React.createElement(
+	            'div',
+	            null,
+	            view,
+	            React.createElement(MessageList, { messages: this.state.messages })
+	        );
 	    }
 	});
 	
@@ -22049,6 +22064,33 @@
 	        quizHub.invoke('LeaveQuiz');
 	    }
 	};
+
+/***/ },
+/* 175 */
+/*!**********************************************!*\
+  !*** ./React/Presentational/MessageList.jsx ***!
+  \**********************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function MessageList(props) {
+	    return React.createElement(
+	        'ul',
+	        null,
+	        props.messages.map(function (msg) {
+	            return React.createElement(
+	                'li',
+	                null,
+	                msg
+	            );
+	        })
+	    );
+	}
+	
+	module.exports = MessageList;
 
 /***/ }
 /******/ ]);
