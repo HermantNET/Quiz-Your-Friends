@@ -1,4 +1,5 @@
-﻿var path = require('path');
+/// <binding />
+var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {

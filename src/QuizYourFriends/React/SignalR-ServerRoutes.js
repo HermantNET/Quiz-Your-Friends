@@ -1,17 +1,17 @@
 ﻿module.exports = {
     CreateQuiz: function (hub) {
-        hub.invoke('CreateQuiz', prompt("Room name: "), 3);
+        hub.invoke('CreateQuiz', prompt("Room name: "), prompt("Max players: "));
     },
 
-    JoinQuiz: function () {
-        quizHub.invoke('JoinQuiz', prompt("Room name: "));
+    JoinQuiz: function (hub) {
+        hub.invoke('JoinQuiz', prompt("Room name: "));
     },
 
-    ReadyUp: function () {
-        quizHub.invoke('ReadyUp');
+    ReadyUp: function (hub) {
+        hub.invoke('ReadyUp');
     },
 
-    LeaveQuiz: function () {
-        quizHub.invoke('LeaveQuiz');
+    LeaveQuiz: function (hub) {
+        hub.invoke('LeaveQuiz');
     }
 }

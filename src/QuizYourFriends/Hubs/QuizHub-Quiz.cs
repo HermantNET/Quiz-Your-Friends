@@ -4,17 +4,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using QuizYourFriends.Models;
+using Newtonsoft.Json;
 
 namespace QuizYourFriends.Hubs
 {
     // Quiz Methods
     public partial class QuizHub : Hub
     {
-        public void CreateQuiz(string name, int max)
+        private void PlayersInLobby()
         {
+            if (IsInRoom())
+            {
+                var quiz = GetCurrentQuiz();
+                var players = quiz.Players.Select(p => new { p.Name, p.Score });
+                Clients.Group(quiz.Name).playersInLobby(JsonConvert.SerializeObject(players));
+            }
+        }
+
+        public void CreateQuiz(string name, string max)
+        {
+            int maxPlayers;
             if (name == null || name.Trim() == "")
             {
                 Clients.Caller.message("Room creation failed: Name must be at least 1 character");
+            }
+            else if (!int.TryParse(max, out maxPlayers))
+            {
+                Clients.Caller.message("Room creation failed: max must be an integer");
+            }
+            else if (maxPlayers < 2)
+            {
+                Clients.Caller.message("Room creation failed: maximum players must be greater than 1");
             }
             else
             {
@@ -25,8 +45,10 @@ namespace QuizYourFriends.Hubs
                 }
 
                 Groups.Add(Context.ConnectionId, name);
-                Quizzes.Add(new Quiz(name, max, GetCurrentPlayer()));
+                Quizzes.Add(new Quiz(name, maxPlayers, GetCurrentPlayer()));
                 Clients.Caller.message("Room '" + name + "' created");
+                Clients.Caller.inRoom(true);
+                PlayersInLobby();
             }
         }
 
@@ -50,22 +72,27 @@ namespace QuizYourFriends.Hubs
 
                     await Groups.Add(Context.ConnectionId, name);
                     quiz.Players.Add(player);
+                    Clients.Caller.inRoom(true);
                     Clients.Group(quiz.Name).message(player.Name + " joined the room");
+                    PlayersInLobby();
                 }
                 else
                 {
                     Clients.Caller.message("Player count reached");
+                    Clients.Caller.inRoom(false);
                 }
             }
             // Quiz has already started
             else if (exists)
             {
                 Clients.Caller.message("Quiz has already started");
+                Clients.Caller.inRoom(false);
             }
             // Quiz does not exist
             else
             {
                 Clients.Caller.message("Room does not exist");
+                Clients.Caller.inRoom(false);
             }
         }
 
@@ -87,8 +114,17 @@ namespace QuizYourFriends.Hubs
             {
                 quiz.Players.Remove(player);
                 Groups.Remove(Context.ConnectionId, quiz.Name);
+                Clients.Caller.inRoom(false);
+                PlayersInLobby();
                 Clients.Group(quiz.Name).message(player.Name + " left the room");
-                Clients.Caller("Left room " + quiz.Name);
+                try
+                {
+                    Clients.Caller("Left room " + quiz.Name);
+                }
+                catch
+                {
+                    Console.WriteLine("Client '" + player.Name + "' terminated connection");
+                }
             }
         }
 

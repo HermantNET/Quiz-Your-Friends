@@ -1,5 +1,0 @@
-﻿
-
-quizHub.client.quizStarted = function () {
-
-}

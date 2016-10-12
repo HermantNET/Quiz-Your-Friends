@@ -21946,8 +21946,10 @@
 	
 	var React = __webpack_require__(/*! react */ 1);
 	var QuizMenu = __webpack_require__(/*! .././Presentational/QuizMenu.jsx */ 173);
-	var ServerRoutes = __webpack_require__(/*! ../SignalR-ServerRoutes.js */ 174);
-	var MessageList = __webpack_require__(/*! .././Presentational/MessageList.jsx */ 175);
+	var QuizRoom = __webpack_require__(/*! .././Presentational/QuizRoom.jsx */ 174);
+	var ServerRoutes = __webpack_require__(/*! ../SignalR-ServerRoutes.js */ 175);
+	var MessageList = __webpack_require__(/*! .././Presentational/MessageList.jsx */ 176);
+	var UserList = __webpack_require__(/*! .././Presentational/UserList.jsx */ 177);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -21959,13 +21961,13 @@
 	            started: false,
 	            inRoom: false,
 	            room: 'none',
-	            playersInLobby: [{ name: 'none', score: 0 }],
-	            maxPlayers: 1,
+	            playersInLobby: [],
 	            name: prompt("Display name: "),
 	            messages: []
 	        };
 	    },
 	    componentWillMount: function componentWillMount() {
+	        // Set the users name server side
 	        $.connection.hub.qs = { name: this.state.name };
 	        $.connection.hub.start().done(function () {
 	            this.setState({
@@ -21974,16 +21976,52 @@
 	        }.bind(this));
 	    },
 	    componentDidMount: function componentDidMount() {
+	
+	        // Client side response code for SignalR
 	        this.state.hub.client.message = function (msg) {
 	            console.log(msg);
 	            this.setState({
 	                messages: this.state.messages.concat(msg)
 	            });
 	        }.bind(this);
+	
+	        this.state.hub.client.quizStarted = function () {
+	            this.setState({
+	                started: true
+	            });
+	            console.log('quiz has started');
+	        }.bind(this);
+	
+	        this.state.hub.client.playersInLobby = function (players) {
+	            console.log(players);
+	            this.setState({
+	                playersInLobby: JSON.parse(players)
+	            });
+	        }.bind(this);
+	
+	        this.state.hub.client.inRoom = function (bool) {
+	            this.setState({
+	                inRoom: bool
+	            });
+	        }.bind(this);
+	        // End Client side response code for SignalR
 	    },
+	
+	    // SignalR call server code
 	    createQuiz: function createQuiz() {
 	        ServerRoutes.CreateQuiz(this.state.hub);
 	    },
+	    joinQuiz: function joinQuiz() {
+	        ServerRoutes.JoinQuiz(this.state.hub);
+	    },
+	    leaveQuiz: function leaveQuiz() {
+	        ServerRoutes.LeaveQuiz(this.state.hub);
+	    },
+	    readyUp: function readyUp() {
+	        ServerRoutes.ReadyUp(this.state.hub);
+	    },
+	    // End SignalR call server code
+	
 	    render: function render() {
 	        var view;
 	        if (!this.state.connected) {
@@ -21992,9 +22030,15 @@
 	                null,
 	                'Connecting...'
 	            );
-	        } else if (this.state.connected && !this.state.inRoom) {
-	            view = React.createElement(QuizMenu, { createQuiz: this.createQuiz });
-	        } else {
+	        } else if (!this.state.inRoom) {
+	            view = React.createElement(
+	                'p',
+	                null,
+	                'Create or join a room to play'
+	            );
+	        } else if (this.state.inRoom && !this.state.started) {
+	            view = React.createElement(QuizRoom, null);
+	        } else if (this.state.started) {} else {
 	            view = React.createElement(
 	                'p',
 	                null,
@@ -22005,7 +22049,12 @@
 	        return React.createElement(
 	            'div',
 	            null,
+	            React.createElement(QuizMenu, { createQuiz: this.createQuiz,
+	                joinQuiz: this.joinQuiz,
+	                leavQuiz: this.leaveQuiz,
+	                readyUp: this.readyUp }),
 	            view,
+	            this.state.inRoom ? React.createElement(UserList, { players: this.state.playersInLobby }) : '',
 	            React.createElement(MessageList, { messages: this.state.messages })
 	        );
 	    }
@@ -22032,6 +22081,21 @@
 	            'button',
 	            { onClick: props.createQuiz },
 	            'Create Quiz'
+	        ),
+	        React.createElement(
+	            'button',
+	            { onClick: props.joinQuiz },
+	            'Join Quiz'
+	        ),
+	        React.createElement(
+	            'button',
+	            { onClick: props.leaveQuiz },
+	            'Leave Quiz'
+	        ),
+	        React.createElement(
+	            'button',
+	            { onClick: props.readyUp },
+	            'Ready Up'
 	        )
 	    );
 	}
@@ -22040,33 +22104,54 @@
 
 /***/ },
 /* 174 */
+/*!*******************************************!*\
+  !*** ./React/Presentational/QuizRoom.jsx ***!
+  \*******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function QuizRoom(props) {
+	    return React.createElement(
+	        'p',
+	        null,
+	        'Waiting for everyone to \'Ready Up\''
+	    );
+	}
+	
+	module.exports = QuizRoom;
+
+/***/ },
+/* 175 */
 /*!***************************************!*\
   !*** ./React/SignalR-ServerRoutes.js ***!
   \***************************************/
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
 	module.exports = {
 	    CreateQuiz: function CreateQuiz(hub) {
-	        hub.invoke('CreateQuiz', prompt("Room name: "), 3);
+	        hub.invoke('CreateQuiz', prompt("Room name: "), prompt("Max players: "));
 	    },
 	
-	    JoinQuiz: function JoinQuiz() {
-	        quizHub.invoke('JoinQuiz', prompt("Room name: "));
+	    JoinQuiz: function JoinQuiz(hub) {
+	        hub.invoke('JoinQuiz', prompt("Room name: "));
 	    },
 	
-	    ReadyUp: function ReadyUp() {
-	        quizHub.invoke('ReadyUp');
+	    ReadyUp: function ReadyUp(hub) {
+	        hub.invoke('ReadyUp');
 	    },
 	
-	    LeaveQuiz: function LeaveQuiz() {
-	        quizHub.invoke('LeaveQuiz');
+	    LeaveQuiz: function LeaveQuiz(hub) {
+	        hub.invoke('LeaveQuiz');
 	    }
 	};
 
 /***/ },
-/* 175 */
+/* 176 */
 /*!**********************************************!*\
   !*** ./React/Presentational/MessageList.jsx ***!
   \**********************************************/
@@ -22080,10 +22165,10 @@
 	    return React.createElement(
 	        'ul',
 	        null,
-	        props.messages.map(function (msg) {
+	        props.messages.map(function (msg, index) {
 	            return React.createElement(
 	                'li',
-	                null,
+	                { key: 'msg' + index },
 	                msg
 	            );
 	        })
@@ -22091,6 +22176,39 @@
 	}
 	
 	module.exports = MessageList;
+
+/***/ },
+/* 177 */
+/*!*******************************************!*\
+  !*** ./React/Presentational/UserList.jsx ***!
+  \*******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function UserList(props) {
+	    return React.createElement(
+	        'ul',
+	        null,
+	        props.players.map(function (player, index) {
+	            return React.createElement(
+	                'li',
+	                { key: 'player' + index },
+	                player.Name,
+	                ' ',
+	                React.createElement(
+	                    'span',
+	                    null,
+	                    player.Score
+	                )
+	            );
+	        })
+	    );
+	}
+	
+	module.exports = UserList;
 
 /***/ }
 /******/ ]);
