@@ -36,5 +36,15 @@ namespace QuizYourFriends.Hubs
             ConnectedPlayers.Remove(GetCurrentPlayer());
             return base.OnDisconnected(stopCalled);
         }
+
+        private void MessageGroup(string msg, string group)
+        {
+            Clients.Group(group).message(msg);
+        }
+
+        private void MessageGroup(string msg)
+        {
+            Clients.Group(GetCurrentQuiz().Name).message(msg);
+        }
     }
 }

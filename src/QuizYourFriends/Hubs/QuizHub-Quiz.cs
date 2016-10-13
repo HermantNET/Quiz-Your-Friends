@@ -72,7 +72,7 @@ namespace QuizYourFriends.Hubs
                     await Groups.Add(Context.ConnectionId, name);
                     quiz.Players.Add(player);
                     Clients.Caller.inRoom(true);
-                    Clients.Group(quiz.Name).message(player.Name + " joined the room");
+                    MessageGroup(player.Name + " joined the room");
                     PlayersInLobby(quiz);
                 }
                 else
@@ -132,7 +132,7 @@ namespace QuizYourFriends.Hubs
                     }
 
                     PlayersInLobby(quiz);
-                    Clients.Group(quiz.Name).message(player.Name + " left the room");
+                    MessageGroup(player.Name + " left the room", quiz.Name);
                 }
 
                 Clients.Caller.inRoom(false);
@@ -146,7 +146,7 @@ namespace QuizYourFriends.Hubs
 
             quiz.Started = true;
             Clients.Group(quiz.Name).getQuestions();
-            Clients.Group(quiz.Name).message("All players ready, waiting for all players to submit their questions");
+            MessageGroup("All players ready, waiting for all players to submit their questions", quiz.Name);
         }
 
         private void StartQuiz()
@@ -154,7 +154,7 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz().Name;
 
             Clients.Group(quiz).startQuiz();
-            Clients.Group(quiz).message("All questions submitted, starting quiz");
+            MessageGroup("All questions submitted, starting quiz", quiz);
             Question();
         }
 

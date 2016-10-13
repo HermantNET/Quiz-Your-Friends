@@ -23,5 +23,9 @@
             q.wrong1.value,
             q.wrong2.value,
             q.wrong3.value);
+    },
+
+    SubmitAnswer: function (hub, answer) {
+        hub.invoke('SubmitAnswer', answer);
     }
 }

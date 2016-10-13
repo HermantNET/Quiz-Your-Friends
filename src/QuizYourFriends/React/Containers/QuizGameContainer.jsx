@@ -101,6 +101,7 @@ var QuizGameContainer = React.createClass({
     },
     chooseAnswer: function (e) {
         console.log(e.target.textContent);
+        ServerRoutes.SubmitAnswer(this.state.hub, e.target.textContent);
     },
     // End SignalR call server code
 

@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace QuizYourFriends.Models
 {
     public class Question
     {
         public string QuestionBy { get; set; }
+
+        public List<string> AnsweredBy { get; set; }
 
         private string _statement = string.Empty;
         public string Statement { get { return _statement; } set { _statement = value.Trim(); } }
@@ -30,6 +33,7 @@ namespace QuizYourFriends.Models
             Statement = question;
             CorrectAnswer = correct;
             WrongAnswers = wrong;
+            AnsweredBy = new List<string>();
         }
     }
 }

@@ -22048,6 +22048,7 @@
 	    },
 	    chooseAnswer: function chooseAnswer(e) {
 	        console.log(e.target.textContent);
+	        ServerRoutes.SubmitAnswer(this.state.hub, e.target.textContent);
 	    },
 	    // End SignalR call server code
 	
@@ -22187,6 +22188,10 @@
 	    // TODO send JSON object string
 	    SubmitQuestion: function SubmitQuestion(hub, q) {
 	        hub.invoke('ComposedQuestion', q.question.value, q.correct.value, q.wrong1.value, q.wrong2.value, q.wrong3.value);
+	    },
+	
+	    SubmitAnswer: function SubmitAnswer(hub, answer) {
+	        hub.invoke('SubmitAnswer', answer);
 	    }
 	};
 

@@ -53,13 +53,44 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz();
             var question = quiz.Questions.ElementAtOrDefault(++quiz.CurrentQuestion);
 
-            if (question == null)
+            if (quiz.CurrentQuestion >= quiz.Questions.Count)
             {
                 EndQuiz();
             }
             
             Clients.Group(quiz.Name).question(question.Statement,
                 JsonConvert.SerializeObject(ScrambleAnswers(question.CorrectAnswer, question.WrongAnswers)));
+        }
+
+        public void SubmitAnswer(string answer)
+        {
+            var quiz = GetCurrentQuiz();
+            var player = GetCurrentPlayer();
+            var question = quiz.Questions.ElementAt(quiz.CurrentQuestion);
+
+            if (question.AnsweredBy.Any(conId => Context.ConnectionId == conId))
+            {
+                Clients.Caller.message("You have already answered this question");
+            }
+            else
+            {
+                question.AnsweredBy.Add(Context.ConnectionId);
+                if (answer == quiz.Questions.ElementAt(quiz.CurrentQuestion).CorrectAnswer)
+                {
+                    player.Score += 50;
+                    PlayersInLobby(quiz);
+                    MessageGroup(player.Name + " was correct", quiz.Name);
+                }
+                else
+                {
+                    MessageGroup(player.Name + " was wrong", quiz.Name);
+                }
+            }
+
+            if (question.AnsweredBy.Count == quiz.Players.Count)
+            {
+                Question();
+            }
         }
     }
 }
