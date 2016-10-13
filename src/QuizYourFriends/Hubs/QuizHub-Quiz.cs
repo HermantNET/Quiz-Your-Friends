@@ -140,13 +140,22 @@ namespace QuizYourFriends.Hubs
             }
         }
 
-        private void StartQuiz()
+        private void GetQuestions()
         {
             var quiz = GetCurrentQuiz();
 
             quiz.Started = true;
-            Clients.Group(quiz.Name).quizStarted();
+            Clients.Group(quiz.Name).getQuestions();
             Clients.Group(quiz.Name).message("All players ready, waiting for all players to submit their questions");
+        }
+
+        private void StartQuiz()
+        {
+            var quiz = GetCurrentQuiz().Name;
+
+            Clients.Group(quiz).startQuiz();
+            Clients.Group(quiz).message("All questions submitted, starting quiz");
+            Question();
         }
 
         private void EndQuiz()
@@ -174,7 +183,7 @@ namespace QuizYourFriends.Hubs
                 Clients.Group(quiz.Name).message(player.Name + ((player.Ready == true) ? " is ready" : " is not ready"));
                 if(quiz.Players.Count > 1 && quiz.Players.Where(p => p.Ready).Count() == quiz.Players.Count)
                 {
-                    StartQuiz();
+                    GetQuestions();
                 }
             }
         }

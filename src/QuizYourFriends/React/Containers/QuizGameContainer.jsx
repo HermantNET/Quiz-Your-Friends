@@ -5,12 +5,14 @@ var ServerRoutes = require('../SignalR-ServerRoutes.js');
 var MessageList = require('.././Presentational/MessageList.jsx');
 var UserList = require('.././Presentational/UserList.jsx');
 var ComposeQuestion = require('.././Presentational/ComposeQuestion.jsx');
+var Question = require('.././Presentational/Question.jsx')
 
 var QuizGameContainer = React.createClass({
     getInitialState: function () {
         return {
             hub: $.connection.quizHub,
             connected: false,
+            getQuestions: false,
             started: false,
             inRoom: false,
             room: 'none',
@@ -40,11 +42,18 @@ var QuizGameContainer = React.createClass({
             });
         }.bind(this);
 
-        this.state.hub.client.quizStarted = function () {
+        this.state.hub.client.getQuestions = function () {
+            this.setState({
+                getQuestions: true
+            });
+            console.log('Waiting for questions');
+        }.bind(this);
+
+        this.state.hub.client.startQuiz = function () {
             this.setState({
                 started: true
             });
-            console.log('quiz has started');
+            console.log('Quiz has started');
         }.bind(this);
 
         this.state.hub.client.playersInLobby = function (players) {
@@ -58,6 +67,14 @@ var QuizGameContainer = React.createClass({
             this.setState({
                 inRoom: bool
             });
+        }.bind(this);
+
+        this.state.hub.client.question = function (question, answers) {
+            this.setState({
+                question: question,
+                answers: JSON.parse(answers)
+            });
+            console.log(question + " " + answers);
         }.bind(this);
         // End Client side response code for SignalR
 
@@ -80,7 +97,7 @@ var QuizGameContainer = React.createClass({
     submitQuestion: function (e) {
         e.preventDefault();
         console.log(e.target.question.value);
-        ServerRoutes.submitQuestion(e.target);
+        ServerRoutes.SubmitQuestion(this.state.hub, e.target);
     },
     // End SignalR call server code
 
@@ -92,11 +109,14 @@ var QuizGameContainer = React.createClass({
         else if (!this.state.inRoom) {
             view = <p>Create or join a room to play</p>;
         }
-        else if (this.state.inRoom && !this.state.started) {
+        else if (this.state.inRoom && !this.state.getQuestions) {
             view = <QuizRoom />;
         }
-        else if (this.state.started) {
+        else if (this.state.getQuestions && !this.state.started) {
             view = <ComposeQuestion submit={this.submitQuestion} />
+        }
+        else if (this.state.started) {
+            view = <Question question={this.state.question} answers={this.state.answers} />
         }
         else {
             view = <p>error</p>;

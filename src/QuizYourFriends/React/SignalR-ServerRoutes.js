@@ -16,7 +16,7 @@
     },
 
     // TODO send JSON object string
-    SubmitQuestion(hub, q) {
+    SubmitQuestion: function (hub, q) {
         hub.invoke('ComposedQuestion',
             q.question.value,
             q.correct.value,

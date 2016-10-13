@@ -8,7 +8,7 @@ namespace QuizYourFriends.Models
         public int MaxPlayers { get; set; }
         public List<Player> Players { get; set; }
         public List<Question> Questions { get; set; }
-        public Question CurrentQuestion { get; set; }
+        public int CurrentQuestion { get; set; }
         public bool Started { get; set; }
 
         public Quiz(string quizName, int maxPlayers, Player creator)
@@ -19,7 +19,7 @@ namespace QuizYourFriends.Models
             Players.Add(creator);
             Players.Capacity = maxPlayers;
             Questions = new List<Question>();
-            CurrentQuestion = new Question(string.Empty, "Are you ready?", "Ready", new string[] { "Ready", "Ready", "Ready" });
+            CurrentQuestion = -1;
             Started = false;
         }
     }

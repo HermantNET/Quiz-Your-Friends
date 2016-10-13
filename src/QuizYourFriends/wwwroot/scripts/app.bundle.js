@@ -21951,6 +21951,7 @@
 	var MessageList = __webpack_require__(/*! .././Presentational/MessageList.jsx */ 176);
 	var UserList = __webpack_require__(/*! .././Presentational/UserList.jsx */ 177);
 	var ComposeQuestion = __webpack_require__(/*! .././Presentational/ComposeQuestion.jsx */ 178);
+	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 179);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -21959,12 +21960,15 @@
 	        return {
 	            hub: $.connection.quizHub,
 	            connected: false,
+	            getQuestions: false,
 	            started: false,
 	            inRoom: false,
 	            room: 'none',
 	            playersInLobby: [],
 	            name: prompt("Display name: "),
-	            messages: []
+	            messages: [],
+	            question: 'none',
+	            answers: []
 	        };
 	    },
 	    componentWillMount: function componentWillMount() {
@@ -21986,11 +21990,18 @@
 	            });
 	        }.bind(this);
 	
-	        this.state.hub.client.quizStarted = function () {
+	        this.state.hub.client.getQuestions = function () {
+	            this.setState({
+	                getQuestions: true
+	            });
+	            console.log('Waiting for questions');
+	        }.bind(this);
+	
+	        this.state.hub.client.startQuiz = function () {
 	            this.setState({
 	                started: true
 	            });
-	            console.log('quiz has started');
+	            console.log('Quiz has started');
 	        }.bind(this);
 	
 	        this.state.hub.client.playersInLobby = function (players) {
@@ -22004,6 +22015,14 @@
 	            this.setState({
 	                inRoom: bool
 	            });
+	        }.bind(this);
+	
+	        this.state.hub.client.question = function (question, answers) {
+	            this.setState({
+	                question: question,
+	                answers: JSON.parse(answers)
+	            });
+	            console.log(question + " " + answers);
 	        }.bind(this);
 	        // End Client side response code for SignalR
 	    },
@@ -22025,6 +22044,7 @@
 	    submitQuestion: function submitQuestion(e) {
 	        e.preventDefault();
 	        console.log(e.target.question.value);
+	        ServerRoutes.SubmitQuestion(this.state.hub, e.target);
 	    },
 	    // End SignalR call server code
 	
@@ -22042,10 +22062,12 @@
 	                null,
 	                'Create or join a room to play'
 	            );
-	        } else if (this.state.inRoom && !this.state.started) {
+	        } else if (this.state.inRoom && !this.state.getQuestions) {
 	            view = React.createElement(QuizRoom, null);
-	        } else if (this.state.started) {
+	        } else if (this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(ComposeQuestion, { submit: this.submitQuestion });
+	        } else if (this.state.started) {
+	            view = React.createElement(Question, { question: this.state.question, answers: this.state.answers });
 	        } else {
 	            view = React.createElement(
 	                'p',
@@ -22155,6 +22177,11 @@
 	
 	    LeaveQuiz: function LeaveQuiz(hub) {
 	        hub.invoke('LeaveQuiz');
+	    },
+	
+	    // TODO send JSON object string
+	    SubmitQuestion: function SubmitQuestion(hub, q) {
+	        hub.invoke('ComposedQuestion', q.question.value, q.correct.value, q.wrong1.value, q.wrong2.value, q.wrong3.value);
 	    }
 	};
 
@@ -22243,6 +22270,42 @@
 	}
 	
 	module.exports = ComposeQuestion;
+
+/***/ },
+/* 179 */
+/*!*******************************************!*\
+  !*** ./React/Presentational/Question.jsx ***!
+  \*******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function Question(props) {
+	    return React.createElement(
+	        "div",
+	        null,
+	        React.createElement(
+	            "p",
+	            null,
+	            props.question
+	        ),
+	        React.createElement(
+	            "ul",
+	            null,
+	            props.answers.map(function (answer, index) {
+	                return React.createElement(
+	                    "li",
+	                    { key: "answer" + index },
+	                    answer
+	                );
+	            })
+	        )
+	    );
+	}
+	
+	module.exports = Question;
 
 /***/ }
 /******/ ]);
