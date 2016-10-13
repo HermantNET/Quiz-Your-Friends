@@ -22046,6 +22046,9 @@
 	        console.log(e.target.question.value);
 	        ServerRoutes.SubmitQuestion(this.state.hub, e.target);
 	    },
+	    chooseAnswer: function chooseAnswer(e) {
+	        console.log(e.target.textContent);
+	    },
 	    // End SignalR call server code
 	
 	    render: function render() {
@@ -22067,7 +22070,9 @@
 	        } else if (this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(ComposeQuestion, { submit: this.submitQuestion });
 	        } else if (this.state.started) {
-	            view = React.createElement(Question, { question: this.state.question, answers: this.state.answers });
+	            view = React.createElement(Question, { chooseAnswer: this.chooseAnswer,
+	                question: this.state.question,
+	                answers: this.state.answers });
 	        } else {
 	            view = React.createElement(
 	                'p',
@@ -22291,17 +22296,13 @@
 	            null,
 	            props.question
 	        ),
-	        React.createElement(
-	            "ul",
-	            null,
-	            props.answers.map(function (answer, index) {
-	                return React.createElement(
-	                    "li",
-	                    { key: "answer" + index },
-	                    answer
-	                );
-	            })
-	        )
+	        props.answers.map(function (answer, index) {
+	            return React.createElement(
+	                "button",
+	                { key: "answer" + index, onClick: props.chooseAnswer },
+	                answer
+	            );
+	        })
 	    );
 	}
 	

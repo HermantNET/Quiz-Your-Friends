@@ -4,10 +4,11 @@ function Question(props) {
     return (
         <div>
             <p>{props.question}</p>
-            <ul>
-                {props.answers.map((answer, index) =>
-                <li key={"answer"+index}>{answer}</li>)}
-            </ul>
+            {props.answers.map((answer, index) =>
+                <button key={"answer"+index} onClick={props.chooseAnswer}>
+                    {answer}
+                </button>
+            )}
         </div>
     );
 }

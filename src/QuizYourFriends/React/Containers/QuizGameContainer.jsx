@@ -99,6 +99,9 @@ var QuizGameContainer = React.createClass({
         console.log(e.target.question.value);
         ServerRoutes.SubmitQuestion(this.state.hub, e.target);
     },
+    chooseAnswer: function (e) {
+        console.log(e.target.textContent);
+    },
     // End SignalR call server code
 
     render: function () {
@@ -116,7 +119,9 @@ var QuizGameContainer = React.createClass({
             view = <ComposeQuestion submit={this.submitQuestion} />
         }
         else if (this.state.started) {
-            view = <Question question={this.state.question} answers={this.state.answers} />
+            view = <Question chooseAnswer={this.chooseAnswer}
+                             question={this.state.question}
+                             answers={this.state.answers} />
         }
         else {
             view = <p>error</p>;
