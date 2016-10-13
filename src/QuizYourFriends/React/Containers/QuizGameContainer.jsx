@@ -4,6 +4,7 @@ var QuizRoom = require('.././Presentational/QuizRoom.jsx');
 var ServerRoutes = require('../SignalR-ServerRoutes.js');
 var MessageList = require('.././Presentational/MessageList.jsx');
 var UserList = require('.././Presentational/UserList.jsx');
+var ComposeQuestion = require('.././Presentational/ComposeQuestion.jsx');
 
 var QuizGameContainer = React.createClass({
     getInitialState: function () {
@@ -15,7 +16,9 @@ var QuizGameContainer = React.createClass({
             room: 'none',
             playersInLobby: [],
             name: prompt("Display name: "),
-            messages: []
+            messages: [],
+            question: 'none',
+            answers: []
         }
     },
     componentWillMount: function () {
@@ -73,6 +76,12 @@ var QuizGameContainer = React.createClass({
     readyUp: function () {
         ServerRoutes.ReadyUp(this.state.hub);
     },
+
+    submitQuestion: function (e) {
+        e.preventDefault();
+        console.log(e.target.question.value);
+        ServerRoutes.submitQuestion(e.target);
+    },
     // End SignalR call server code
 
     render: function () {
@@ -87,7 +96,7 @@ var QuizGameContainer = React.createClass({
             view = <QuizRoom />;
         }
         else if (this.state.started) {
-
+            view = <ComposeQuestion submit={this.submitQuestion} />
         }
         else {
             view = <p>error</p>;

@@ -10,7 +10,8 @@ namespace QuizYourFriends.Hubs
     // Question Methods
     public partial class QuizHub : Hub
     {
-        public void ComposedQuestionAndAnswers(string question, string correct, string wrong1, string wrong2, string wrong3)
+        // TODO accept JSON object string and parse
+        public void ComposedQuestion(string question, string correct, string wrong1, string wrong2, string wrong3)
         {
             GetCurrentQuiz().Questions.Add(new Question(
                     Context.ConnectionId,
@@ -28,8 +29,10 @@ namespace QuizYourFriends.Hubs
             return result.ToArray();
         }
 
-        protected void Question(Question ques)
+        protected void Question()
         {
+            var quiz = GetCurrentQuiz();
+
 
         }
     }

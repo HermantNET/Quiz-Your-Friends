@@ -97,22 +97,40 @@ namespace QuizYourFriends.Hubs
             var player = GetCurrentPlayer();
             var quiz = GetCurrentQuiz();
 
-            // Delete Quiz room if no players are in it
             if (quiz == null)
             {
                 Clients.Caller.message("You are not in a room");
             }
             else
             {
-                if (quiz.Players.Count - 1 == 0)
+                // Delete Quiz room if no players are in it
+                if (quiz.Players.Count - 1 < 1)
                 {
-                    await Groups.Remove(Context.ConnectionId, quiz.Name);
+                    // TODO fix TaskCanceledException, refactor
+                    // Error occurs 10 seconds after client closes quiz tab
+                    try
+                    {
+                        await Groups.Remove(Context.ConnectionId, quiz.Name);
+                    }
+                    catch (TaskCanceledException e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                     Quizzes.Remove(quiz);
                 }
                 else
                 {
                     quiz.Players.Remove(player);
-                    await Groups.Remove(Context.ConnectionId, quiz.Name);
+                    // Error occurs 10 seconds after client closes quiz tab
+                    try
+                    {
+                        await Groups.Remove(Context.ConnectionId, quiz.Name);
+                    }
+                    catch (TaskCanceledException e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
                     PlayersInLobby(quiz);
                     Clients.Group(quiz.Name).message(player.Name + " left the room");
                 }
@@ -128,6 +146,7 @@ namespace QuizYourFriends.Hubs
 
             quiz.Started = true;
             Clients.Group(quiz.Name).quizStarted();
+            Clients.Group(quiz.Name).message("All players ready, waiting for all players to submit their questions");
         }
 
         private void EndQuiz()
@@ -153,7 +172,7 @@ namespace QuizYourFriends.Hubs
             {
                 player.Ready = !player.Ready;
                 Clients.Group(quiz.Name).message(player.Name + ((player.Ready == true) ? " is ready" : " is not ready"));
-                if (quiz.Players.Count() > 1 && quiz.Players.Select(p => p.Ready).Count() == quiz.Players.Count())
+                if(quiz.Players.Count > 1 && quiz.Players.Where(p => p.Ready).Count() == quiz.Players.Count)
                 {
                     StartQuiz();
                 }

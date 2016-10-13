@@ -13,5 +13,15 @@
 
     LeaveQuiz: function (hub) {
         hub.invoke('LeaveQuiz');
+    },
+
+    // TODO send JSON object string
+    SubmitQuestion(hub, q) {
+        hub.invoke('ComposedQuestion',
+            q.question.value,
+            q.correct.value,
+            q.wrong1.value,
+            q.wrong2.value,
+            q.wrong3.value);
     }
 }

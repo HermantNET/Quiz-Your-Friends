@@ -21950,6 +21950,7 @@
 	var ServerRoutes = __webpack_require__(/*! ../SignalR-ServerRoutes.js */ 175);
 	var MessageList = __webpack_require__(/*! .././Presentational/MessageList.jsx */ 176);
 	var UserList = __webpack_require__(/*! .././Presentational/UserList.jsx */ 177);
+	var ComposeQuestion = __webpack_require__(/*! .././Presentational/ComposeQuestion.jsx */ 178);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -22020,6 +22021,11 @@
 	    readyUp: function readyUp() {
 	        ServerRoutes.ReadyUp(this.state.hub);
 	    },
+	
+	    submitQuestion: function submitQuestion(e) {
+	        e.preventDefault();
+	        console.log(e.target.question.value);
+	    },
 	    // End SignalR call server code
 	
 	    render: function render() {
@@ -22038,7 +22044,9 @@
 	            );
 	        } else if (this.state.inRoom && !this.state.started) {
 	            view = React.createElement(QuizRoom, null);
-	        } else if (this.state.started) {} else {
+	        } else if (this.state.started) {
+	            view = React.createElement(ComposeQuestion, { submit: this.submitQuestion });
+	        } else {
 	            view = React.createElement(
 	                'p',
 	                null,
@@ -22209,6 +22217,32 @@
 	}
 	
 	module.exports = UserList;
+
+/***/ },
+/* 178 */
+/*!**************************************************!*\
+  !*** ./React/Presentational/ComposeQuestion.jsx ***!
+  \**************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function ComposeQuestion(props) {
+	    return React.createElement(
+	        "form",
+	        { action: "", onSubmit: props.submit },
+	        React.createElement("textarea", { name: "question", placeholder: "Type your question here...", minLength: "3", maxLength: "140", required: true }),
+	        React.createElement("input", { name: "correct", type: "text", placeholder: "Correct answer", maxLength: "25", required: true }),
+	        React.createElement("input", { name: "wrong1", type: "text", placeholder: "Wrong answer", maxLength: "25", required: true }),
+	        React.createElement("input", { name: "wrong2", type: "text", placeholder: "Wrong answer", maxLength: "25", required: true }),
+	        React.createElement("input", { name: "wrong3", type: "text", placeholder: "Wrong answer", maxLength: "25", required: true }),
+	        React.createElement("input", { type: "submit", value: "Submit" })
+	    );
+	}
+	
+	module.exports = ComposeQuestion;
 
 /***/ }
 /******/ ]);
