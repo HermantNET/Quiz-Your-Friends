@@ -97,7 +97,7 @@ var QuizGameContainer = React.createClass({
             <div>
                 <QuizMenu createQuiz={this.createQuiz}
                           joinQuiz={this.joinQuiz}
-                          leavQuiz={this.leaveQuiz}
+                          leaveQuiz={this.leaveQuiz}
                           readyUp={this.readyUp} />
                 {view}
                 {this.state.inRoom ? <UserList players={this.state.playersInLobby} /> : ''}

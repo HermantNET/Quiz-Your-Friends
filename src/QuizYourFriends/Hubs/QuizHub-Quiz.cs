@@ -11,11 +11,10 @@ namespace QuizYourFriends.Hubs
     // Quiz Methods
     public partial class QuizHub : Hub
     {
-        private void PlayersInLobby()
+        private void PlayersInLobby(Quiz quiz)
         {
             if (IsInRoom())
             {
-                var quiz = GetCurrentQuiz();
                 var players = quiz.Players.Select(p => new { p.Name, p.Score });
                 Clients.Group(quiz.Name).playersInLobby(JsonConvert.SerializeObject(players));
             }
@@ -48,7 +47,7 @@ namespace QuizYourFriends.Hubs
                 Quizzes.Add(new Quiz(name, maxPlayers, GetCurrentPlayer()));
                 Clients.Caller.message("Room '" + name + "' created");
                 Clients.Caller.inRoom(true);
-                PlayersInLobby();
+                PlayersInLobby(GetCurrentQuiz());
             }
         }
 
@@ -74,29 +73,26 @@ namespace QuizYourFriends.Hubs
                     quiz.Players.Add(player);
                     Clients.Caller.inRoom(true);
                     Clients.Group(quiz.Name).message(player.Name + " joined the room");
-                    PlayersInLobby();
+                    PlayersInLobby(quiz);
                 }
                 else
                 {
                     Clients.Caller.message("Player count reached");
-                    Clients.Caller.inRoom(false);
                 }
             }
             // Quiz has already started
             else if (exists)
             {
                 Clients.Caller.message("Quiz has already started");
-                Clients.Caller.inRoom(false);
             }
             // Quiz does not exist
             else
             {
                 Clients.Caller.message("Room does not exist");
-                Clients.Caller.inRoom(false);
             }
         }
 
-        public void LeaveQuiz()
+        public async void LeaveQuiz()
         {
             var player = GetCurrentPlayer();
             var quiz = GetCurrentQuiz();
@@ -106,25 +102,23 @@ namespace QuizYourFriends.Hubs
             {
                 Clients.Caller.message("You are not in a room");
             }
-            else if (quiz.Players.Count == 0)
-            {
-                Quizzes.Remove(quiz);
-            }
             else
             {
-                quiz.Players.Remove(player);
-                Groups.Remove(Context.ConnectionId, quiz.Name);
+                if (quiz.Players.Count - 1 == 0)
+                {
+                    await Groups.Remove(Context.ConnectionId, quiz.Name);
+                    Quizzes.Remove(quiz);
+                }
+                else
+                {
+                    quiz.Players.Remove(player);
+                    await Groups.Remove(Context.ConnectionId, quiz.Name);
+                    PlayersInLobby(quiz);
+                    Clients.Group(quiz.Name).message(player.Name + " left the room");
+                }
+
                 Clients.Caller.inRoom(false);
-                PlayersInLobby();
-                Clients.Group(quiz.Name).message(player.Name + " left the room");
-                try
-                {
-                    Clients.Caller("Left room " + quiz.Name);
-                }
-                catch
-                {
-                    Console.WriteLine("Client '" + player.Name + "' terminated connection");
-                }
+                Clients.Caller.message("Left room " + quiz.Name);
             }
         }
 
@@ -138,7 +132,7 @@ namespace QuizYourFriends.Hubs
 
         private void EndQuiz()
         {
-            
+
         }
 
         private void PlayAgain()

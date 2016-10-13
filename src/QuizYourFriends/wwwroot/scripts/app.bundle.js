@@ -22051,7 +22051,7 @@
 	            null,
 	            React.createElement(QuizMenu, { createQuiz: this.createQuiz,
 	                joinQuiz: this.joinQuiz,
-	                leavQuiz: this.leaveQuiz,
+	                leaveQuiz: this.leaveQuiz,
 	                readyUp: this.readyUp }),
 	            view,
 	            this.state.inRoom ? React.createElement(UserList, { players: this.state.playersInLobby }) : '',
