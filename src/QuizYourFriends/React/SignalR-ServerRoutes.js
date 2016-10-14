@@ -27,5 +27,9 @@
 
     SubmitAnswer: function (hub, answer) {
         hub.invoke('SubmitAnswer', answer);
+    },
+
+    PlayersReady: function (hub) {
+        hub.invoke('PlayersReady');
     }
 }

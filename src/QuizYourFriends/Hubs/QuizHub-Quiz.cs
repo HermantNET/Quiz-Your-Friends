@@ -40,10 +40,13 @@ namespace QuizYourFriends.Hubs
                         LeaveQuiz();
                     }
 
+                    if (maxPlayers > 20)
+                        maxPlayers = 20;
+
                     Groups.Add(Context.ConnectionId, trimmedName);
                     Quizzes.Add(new Quiz(trimmedName, maxPlayers, GetCurrentPlayer()));
                     Clients.Caller.message("Room '" + trimmedName + "' created");
-                    Clients.Caller.inRoom(true, name, max);
+                    Clients.Caller.inRoom(true, name, maxPlayers);
                     PlayersInLobby(GetCurrentQuiz());
                 }
             }
@@ -190,6 +193,7 @@ namespace QuizYourFriends.Hubs
             {
                 player.Ready = !player.Ready;
                 Clients.Group(quiz.Name).message(player.Name + ((player.Ready == true) ? " is ready" : " is not ready"));
+                PlayersReady();
                 if(quiz.Players.Count > 1 && quiz.Players.Where(p => p.Ready).Count() == quiz.Players.Count)
                 {
                     GetQuestions();

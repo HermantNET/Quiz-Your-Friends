@@ -21965,6 +21965,7 @@
 	            started: false,
 	            ended: false,
 	            inRoom: false,
+	            readyCount: 0,
 	            room: 'none',
 	            maxPlayers: 0,
 	            players: [],
@@ -22027,6 +22028,12 @@
 	            });
 	        }.bind(this);
 	
+	        this.state.hub.client.playersReady = function (num) {
+	            this.setState({
+	                readyCount: num
+	            });
+	        }.bind(this);
+	
 	        this.state.hub.client.question = function (question, answers) {
 	            this.setState({
 	                question: question,
@@ -22072,6 +22079,9 @@
 	    readyUp: function readyUp() {
 	        ServerRoutes.ReadyUp(this.state.hub);
 	    },
+	    playersReady: function playersReady() {
+	        ServerRoutes.PlayersReady(this.state.hub);
+	    },
 	
 	    submitQuestion: function submitQuestion(e) {
 	        e.preventDefault();
@@ -22113,7 +22123,7 @@
 	                'Create or join a room to play'
 	            );
 	        } else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
-	            view = React.createElement(QuizRoom, null);
+	            view = React.createElement(QuizRoom, { ready: this.state.readyCount, playerCount: this.state.players == [] ? 1 : this.state.players.length });
 	        } else if (this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(ComposeQuestion, { submit: this.submitQuestion });
 	        } else if (this.state.started && !this.state.ended) {
@@ -22210,11 +22220,28 @@
 	
 	function QuizRoom(props) {
 	    return React.createElement(
-	        'p',
+	        'div',
 	        null,
-	        'Waiting for everyone to \'Ready Up\''
+	        React.createElement(
+	            'p',
+	            null,
+	            'Players ready: ',
+	            props.ready,
+	            '/',
+	            props.playerCount
+	        ),
+	        React.createElement(
+	            'p',
+	            null,
+	            'Waiting for everyone to \'Ready Up\''
+	        )
 	    );
 	}
+	
+	QuizRoom.PropTypes = {
+	    ready: React.PropTypes.number,
+	    playerCount: React.PropTypes.number
+	};
 	
 	module.exports = QuizRoom;
 
@@ -22251,6 +22278,10 @@
 	
 	    SubmitAnswer: function SubmitAnswer(hub, answer) {
 	        hub.invoke('SubmitAnswer', answer);
+	    },
+	
+	    PlayersReady: function PlayersReady(hub) {
+	        hub.invoke('PlayersReady');
 	    }
 	};
 
@@ -22323,6 +22354,11 @@
 	        )
 	    );
 	}
+	
+	UserList.propTypes = {
+	    players: React.PropTypes.arrayOf(React.PropTypes.objectOf(React.PropTypes.string, React.PropTypes.number)),
+	    max: React.PropTypes.number
+	};
 	
 	module.exports = UserList;
 

@@ -38,5 +38,11 @@ namespace QuizYourFriends.Hubs
             var players = quiz.Players.Select(p => new { p.Name, p.Score }).OrderByDescending(p => p.Score).ThenBy(p => p.Name);
             Clients.Caller.playersInLobby(JsonConvert.SerializeObject(players));
         }
+
+        public void PlayersReady()
+        {
+            var quiz = GetCurrentQuiz();
+            Clients.Group(quiz.Name).playersReady(quiz.Players.Where(p => p.Ready).Count());
+        }
     }
 }

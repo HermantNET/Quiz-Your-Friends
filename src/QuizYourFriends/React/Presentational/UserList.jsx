@@ -13,4 +13,9 @@ function UserList(props) {
     );
 }
 
+UserList.propTypes = {
+    players: React.PropTypes.arrayOf(React.PropTypes.objectOf(React.PropTypes.string, React.PropTypes.number)),
+    max: React.PropTypes.number
+}
+
 module.exports = UserList;

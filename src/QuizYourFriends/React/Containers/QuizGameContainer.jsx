@@ -17,6 +17,7 @@ var QuizGameContainer = React.createClass({
             started: false,
             ended: false,
             inRoom: false,
+            readyCount: 0,
             room: 'none',
             maxPlayers: 0,
             players: [],
@@ -79,6 +80,12 @@ var QuizGameContainer = React.createClass({
             });
         }.bind(this);
 
+        this.state.hub.client.playersReady = function (num) {
+            this.setState({
+                readyCount: num
+            });
+        }.bind(this);
+
         this.state.hub.client.question = function (question, answers) {
             this.setState({
                 question: question,
@@ -125,6 +132,9 @@ var QuizGameContainer = React.createClass({
     readyUp: function () {
         ServerRoutes.ReadyUp(this.state.hub);
     },
+    playersReady: function () {
+        ServerRoutes.PlayersReady(this.state.hub);
+    },
 
     submitQuestion: function (e) {
         e.preventDefault();
@@ -158,7 +168,7 @@ var QuizGameContainer = React.createClass({
             view = <p>Create or join a room to play</p>;
         }
         else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
-            view = <QuizRoom />;
+            view = <QuizRoom ready={this.state.readyCount} playerCount={this.state.players == [] ? 1 : this.state.players.length}/>;
         }
         else if (this.state.getQuestions && !this.state.started) {
             view = <ComposeQuestion submit={this.submitQuestion} />
