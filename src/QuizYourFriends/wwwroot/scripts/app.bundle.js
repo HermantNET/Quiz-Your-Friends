@@ -21952,6 +21952,7 @@
 	var UserList = __webpack_require__(/*! .././Presentational/UserList.jsx */ 177);
 	var ComposeQuestion = __webpack_require__(/*! .././Presentational/ComposeQuestion.jsx */ 178);
 	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 179);
+	var QuizEnd = __webpack_require__(/*! .././Presentational/QuizEnd.jsx */ 180);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -21962,9 +21963,11 @@
 	            connected: false,
 	            getQuestions: false,
 	            started: false,
+	            ended: false,
 	            inRoom: false,
 	            room: 'none',
-	            playersInLobby: [],
+	            maxPlayers: 0,
+	            players: [],
 	            name: prompt("Display name: "),
 	            messages: [],
 	            question: 'none',
@@ -21984,36 +21987,35 @@
 	
 	        // Client side response code for SignalR
 	        this.state.hub.client.message = function (msg) {
-	            console.log(msg);
 	            this.setState({
 	                messages: this.state.messages.concat(msg)
 	            });
 	        }.bind(this);
 	
-	        this.state.hub.client.getQuestions = function () {
+	        this.state.hub.client.getQuestions = function (bool) {
 	            this.setState({
-	                getQuestions: true
+	                getQuestions: bool
 	            });
-	            console.log('Waiting for questions');
 	        }.bind(this);
 	
-	        this.state.hub.client.startQuiz = function () {
+	        this.state.hub.client.startQuiz = function (bool) {
 	            this.setState({
-	                started: true
+	                started: bool
 	            });
-	            console.log('Quiz has started');
 	        }.bind(this);
 	
 	        this.state.hub.client.playersInLobby = function (players) {
-	            console.log(players);
 	            this.setState({
-	                playersInLobby: JSON.parse(players)
+	                players: JSON.parse(players)
 	            });
+	            console.log(players);
 	        }.bind(this);
 	
-	        this.state.hub.client.inRoom = function (bool) {
+	        this.state.hub.client.inRoom = function (bool, room, max) {
 	            this.setState({
-	                inRoom: bool
+	                inRoom: bool,
+	                room: room,
+	                maxPlayers: max
 	            });
 	        }.bind(this);
 	
@@ -22022,7 +22024,26 @@
 	                question: question,
 	                answers: JSON.parse(answers)
 	            });
-	            console.log(question + " " + answers);
+	        }.bind(this);
+	
+	        this.state.hub.client.quizEnded = function (bool) {
+	            this.setState({
+	                ended: bool
+	            });
+	        }.bind(this);
+	
+	        this.state.hub.client.reset = function () {
+	            this.setState({
+	                getQuestions: false,
+	                started: false,
+	                ended: false,
+	                inRoom: false,
+	                question: 'none',
+	                room: 'none',
+	                maxPlayers: 0,
+	                answers: [],
+	                players: []
+	            });
 	        }.bind(this);
 	        // End Client side response code for SignalR
 	    },
@@ -22043,11 +22064,9 @@
 	
 	    submitQuestion: function submitQuestion(e) {
 	        e.preventDefault();
-	        console.log(e.target.question.value);
 	        ServerRoutes.SubmitQuestion(this.state.hub, e.target);
 	    },
 	    chooseAnswer: function chooseAnswer(e) {
-	        console.log(e.target.textContent);
 	        ServerRoutes.SubmitAnswer(this.state.hub, e.target.textContent);
 	    },
 	    // End SignalR call server code
@@ -22066,14 +22085,16 @@
 	                null,
 	                'Create or join a room to play'
 	            );
-	        } else if (this.state.inRoom && !this.state.getQuestions) {
+	        } else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(QuizRoom, null);
 	        } else if (this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(ComposeQuestion, { submit: this.submitQuestion });
-	        } else if (this.state.started) {
+	        } else if (this.state.started && !this.state.ended) {
 	            view = React.createElement(Question, { chooseAnswer: this.chooseAnswer,
 	                question: this.state.question,
 	                answers: this.state.answers });
+	        } else if (this.state.ended) {
+	            view = React.createElement(QuizEnd, { players: this.state.players });
 	        } else {
 	            view = React.createElement(
 	                'p',
@@ -22085,12 +22106,17 @@
 	        return React.createElement(
 	            'div',
 	            null,
+	            React.createElement(
+	                'p',
+	                null,
+	                this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room
+	            ),
 	            React.createElement(QuizMenu, { createQuiz: this.createQuiz,
 	                joinQuiz: this.joinQuiz,
 	                leaveQuiz: this.leaveQuiz,
 	                readyUp: this.readyUp }),
 	            view,
-	            this.state.inRoom ? React.createElement(UserList, { players: this.state.playersInLobby }) : '',
+	            this.state.inRoom ? React.createElement(UserList, { players: this.state.players, max: this.state.maxPlayers }) : '',
 	            React.createElement(MessageList, { messages: this.state.messages })
 	        );
 	    }
@@ -22235,21 +22261,33 @@
 	
 	function UserList(props) {
 	    return React.createElement(
-	        'ul',
+	        'div',
 	        null,
-	        props.players.map(function (player, index) {
-	            return React.createElement(
-	                'li',
-	                { key: 'player' + index },
-	                player.Name,
-	                ' ',
-	                React.createElement(
-	                    'span',
-	                    null,
-	                    player.Score
-	                )
-	            );
-	        })
+	        React.createElement(
+	            'p',
+	            null,
+	            'Players in lobby: ',
+	            props.players.length,
+	            '/',
+	            props.max
+	        ),
+	        React.createElement(
+	            'ul',
+	            null,
+	            props.players.map(function (player, index) {
+	                return React.createElement(
+	                    'li',
+	                    { key: 'player' + index },
+	                    player.Name,
+	                    ' ',
+	                    React.createElement(
+	                        'span',
+	                        null,
+	                        player.Score
+	                    )
+	                );
+	            })
+	        )
 	    );
 	}
 	
@@ -22312,6 +22350,48 @@
 	}
 	
 	module.exports = Question;
+
+/***/ },
+/* 180 */
+/*!******************************************!*\
+  !*** ./React/Presentational/QuizEnd.jsx ***!
+  \******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function QuizEnd(props) {
+	    return React.createElement(
+	        "div",
+	        null,
+	        React.createElement(
+	            "p",
+	            null,
+	            props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!"
+	        ),
+	        React.createElement(
+	            "ul",
+	            null,
+	            props.players.map(function (player) {
+	                return React.createElement(
+	                    "li",
+	                    null,
+	                    player.Name,
+	                    " ",
+	                    React.createElement(
+	                        "span",
+	                        null,
+	                        player.Score
+	                    )
+	                );
+	            })
+	        )
+	    );
+	}
+	
+	module.exports = QuizEnd;
 
 /***/ }
 /******/ ]);

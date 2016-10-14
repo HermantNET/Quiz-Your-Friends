@@ -13,42 +13,52 @@ namespace QuizYourFriends.Hubs
     {
         private void PlayersInLobby(Quiz quiz)
         {
-            if (IsInRoom())
-            {
-                var players = quiz.Players.Select(p => new { p.Name, p.Score });
+                var players = quiz.Players.Select(p => new { p.Name, p.Score }).OrderByDescending(p => p.Score).ThenBy(p => p.Name);
                 Clients.Group(quiz.Name).playersInLobby(JsonConvert.SerializeObject(players));
-            }
         }
 
         public void CreateQuiz(string name, string max)
         {
-            int maxPlayers;
-            if (name == null || name.Trim() == "")
+            string trimmedName = name == null ? "" : name.Trim();
+            if (Quizzes.Where(quiz => quiz.Name == trimmedName) != null)
             {
-                Clients.Caller.message("Room creation failed: Name must be at least 1 character");
-            }
-            else if (!int.TryParse(max, out maxPlayers))
-            {
-                Clients.Caller.message("Room creation failed: max must be an integer");
-            }
-            else if (maxPlayers < 2)
-            {
-                Clients.Caller.message("Room creation failed: maximum players must be greater than 1");
+                int maxPlayers;
+                if (trimmedName == "")
+                {
+                    Clients.Caller.message("Room creation failed: Name must be at least 1 character");
+                }
+                else if (trimmedName == "none")
+                {
+                    Clients.Caller.message("Can not make room with name of 'none'");
+                }
+                else if (!int.TryParse(max, out maxPlayers))
+                {
+                    Clients.Caller.message("Room creation failed: max must be an integer");
+                }
+                else if (maxPlayers < 2)
+                {
+                    Clients.Caller.message("Room creation failed: maximum players must be greater than 1");
+                }
+                else
+                {
+                    // 
+                    if (IsInRoom())
+                    {
+                        LeaveQuiz();
+                    }
+
+                    Groups.Add(Context.ConnectionId, trimmedName);
+                    Quizzes.Add(new Quiz(trimmedName, maxPlayers, GetCurrentPlayer()));
+                    Clients.Caller.message("Room '" + trimmedName + "' created");
+                    Clients.Caller.inRoom(true, name, max);
+                    PlayersInLobby(GetCurrentQuiz());
+                }
             }
             else
             {
-                // 
-                if (IsInRoom())
-                {
-                    LeaveQuiz();
-                }
-
-                Groups.Add(Context.ConnectionId, name);
-                Quizzes.Add(new Quiz(name, maxPlayers, GetCurrentPlayer()));
-                Clients.Caller.message("Room '" + name + "' created");
-                Clients.Caller.inRoom(true);
-                PlayersInLobby(GetCurrentQuiz());
+                Clients.Caller.message("Room already exists");
             }
+            
         }
 
         public async void JoinQuiz(string name)
@@ -71,7 +81,7 @@ namespace QuizYourFriends.Hubs
 
                     await Groups.Add(Context.ConnectionId, name);
                     quiz.Players.Add(player);
-                    Clients.Caller.inRoom(true);
+                    Clients.Caller.inRoom(true, name, quiz.MaxPlayers);
                     MessageGroup(player.Name + " joined the room");
                     PlayersInLobby(quiz);
                 }
@@ -104,7 +114,7 @@ namespace QuizYourFriends.Hubs
             else
             {
                 // Delete Quiz room if no players are in it
-                if (quiz.Players.Count - 1 < 1)
+                if (quiz.Players.Count - 1 == 0)
                 {
                     // TODO fix TaskCanceledException, refactor
                     // Error occurs 10 seconds after client closes quiz tab
@@ -131,12 +141,14 @@ namespace QuizYourFriends.Hubs
                         Console.WriteLine(e.Message);
                     }
 
-                    PlayersInLobby(quiz);
                     MessageGroup(player.Name + " left the room", quiz.Name);
                 }
 
-                Clients.Caller.inRoom(false);
+                player.Score = 0;
+                player.Ready = false;
+                Clients.Caller.reset();
                 Clients.Caller.message("Left room " + quiz.Name);
+                PlayersInLobby(quiz);
             }
         }
 
@@ -145,22 +157,23 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz();
 
             quiz.Started = true;
-            Clients.Group(quiz.Name).getQuestions();
+            Clients.Group(quiz.Name).getQuestions(true);
             MessageGroup("All players ready, waiting for all players to submit their questions", quiz.Name);
         }
 
         private void StartQuiz()
         {
             var quiz = GetCurrentQuiz().Name;
-
-            Clients.Group(quiz).startQuiz();
+            Clients.Group(quiz).startQuiz(true);
+            Clients.Group(quiz).getQuestions(false);
             MessageGroup("All questions submitted, starting quiz", quiz);
             Question();
         }
 
         private void EndQuiz()
         {
-
+            var quiz = GetCurrentQuiz();
+            Clients.Group(quiz.Name).quizEnded(true);
         }
 
         private void PlayAgain()

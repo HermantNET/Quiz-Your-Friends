@@ -18,7 +18,7 @@ namespace QuizYourFriends.Hubs
         {
             // If name is empty or null, assign dynamic anonymous identity
             string name = Context.QueryString["name"];
-            name = name.Trim() == "" || name == null ? "Anon" + ConnectedPlayers.Count + 1 : name.Trim();
+            name = name.Trim() == "" || name == null ? "Anon" + (ConnectedPlayers.Count + 1 + (new Random().Next(0, 3500))) : name.Trim();
 
             Player player = new Player(Context.ConnectionId, name);
             ConnectedPlayers.Add(player);

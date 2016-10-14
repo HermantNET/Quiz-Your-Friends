@@ -5,7 +5,8 @@ var ServerRoutes = require('../SignalR-ServerRoutes.js');
 var MessageList = require('.././Presentational/MessageList.jsx');
 var UserList = require('.././Presentational/UserList.jsx');
 var ComposeQuestion = require('.././Presentational/ComposeQuestion.jsx');
-var Question = require('.././Presentational/Question.jsx')
+var Question = require('.././Presentational/Question.jsx');
+var QuizEnd = require('.././Presentational/QuizEnd.jsx');
 
 var QuizGameContainer = React.createClass({
     getInitialState: function () {
@@ -14,9 +15,11 @@ var QuizGameContainer = React.createClass({
             connected: false,
             getQuestions: false,
             started: false,
+            ended: false,
             inRoom: false,
             room: 'none',
-            playersInLobby: [],
+            maxPlayers: 0,
+            players: [],
             name: prompt("Display name: "),
             messages: [],
             question: 'none',
@@ -36,36 +39,35 @@ var QuizGameContainer = React.createClass({
 
         // Client side response code for SignalR
         this.state.hub.client.message = function (msg) {
-            console.log(msg);
             this.setState({
                 messages: this.state.messages.concat(msg)
             });
         }.bind(this);
 
-        this.state.hub.client.getQuestions = function () {
+        this.state.hub.client.getQuestions = function (bool) {
             this.setState({
-                getQuestions: true
+                getQuestions: bool
             });
-            console.log('Waiting for questions');
         }.bind(this);
 
-        this.state.hub.client.startQuiz = function () {
+        this.state.hub.client.startQuiz = function (bool) {
             this.setState({
-                started: true
+                started: bool
             });
-            console.log('Quiz has started');
         }.bind(this);
 
         this.state.hub.client.playersInLobby = function (players) {
-            console.log(players);
             this.setState({
-                playersInLobby: JSON.parse(players)
+                players: JSON.parse(players)
             });
+            console.log(players);
         }.bind(this);
 
-        this.state.hub.client.inRoom = function (bool) {
+        this.state.hub.client.inRoom = function (bool, room, max) {
             this.setState({
-                inRoom: bool
+                inRoom: bool,
+                room: room,
+                maxPlayers: max
             });
         }.bind(this);
 
@@ -74,7 +76,26 @@ var QuizGameContainer = React.createClass({
                 question: question,
                 answers: JSON.parse(answers)
             });
-            console.log(question + " " + answers);
+        }.bind(this);
+
+        this.state.hub.client.quizEnded = function (bool) {
+            this.setState({
+                ended: bool
+            });
+        }.bind(this);
+
+        this.state.hub.client.reset = function () {
+            this.setState({
+                getQuestions: false,
+                started: false,
+                ended: false,
+                inRoom: false,
+                question: 'none',
+                room: 'none',
+                maxPlayers: 0,
+                answers: [],
+                players: []
+            })
         }.bind(this);
         // End Client side response code for SignalR
 
@@ -96,11 +117,9 @@ var QuizGameContainer = React.createClass({
 
     submitQuestion: function (e) {
         e.preventDefault();
-        console.log(e.target.question.value);
         ServerRoutes.SubmitQuestion(this.state.hub, e.target);
     },
     chooseAnswer: function (e) {
-        console.log(e.target.textContent);
         ServerRoutes.SubmitAnswer(this.state.hub, e.target.textContent);
     },
     // End SignalR call server code
@@ -113,16 +132,19 @@ var QuizGameContainer = React.createClass({
         else if (!this.state.inRoom) {
             view = <p>Create or join a room to play</p>;
         }
-        else if (this.state.inRoom && !this.state.getQuestions) {
+        else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
             view = <QuizRoom />;
         }
         else if (this.state.getQuestions && !this.state.started) {
             view = <ComposeQuestion submit={this.submitQuestion} />
         }
-        else if (this.state.started) {
+        else if (this.state.started && !this.state.ended) {
             view = <Question chooseAnswer={this.chooseAnswer}
                              question={this.state.question}
                              answers={this.state.answers} />
+        }
+        else if (this.state.ended) {
+            view = <QuizEnd players={this.state.players} />;
         }
         else {
             view = <p>error</p>;
@@ -130,12 +152,13 @@ var QuizGameContainer = React.createClass({
 
         return (
             <div>
+                <p>{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
                 <QuizMenu createQuiz={this.createQuiz}
                           joinQuiz={this.joinQuiz}
                           leaveQuiz={this.leaveQuiz}
                           readyUp={this.readyUp} />
                 {view}
-                {this.state.inRoom ? <UserList players={this.state.playersInLobby} /> : ''}
+                {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers} /> : ''}
                 <MessageList messages={this.state.messages} />
             </div>
         );

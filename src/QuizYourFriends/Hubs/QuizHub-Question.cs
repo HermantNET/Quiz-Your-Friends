@@ -42,7 +42,7 @@ namespace QuizYourFriends.Hubs
 
         public static string[] ScrambleAnswers(string correct, string[] wrong)
         {
-            Random rand = new Random(4329);
+            Random rand = new Random();
             var result = wrong.ToList();
             result.Insert(rand.Next(0, 4), correct);
             return result.ToArray();
@@ -53,13 +53,16 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz();
             var question = quiz.Questions.ElementAtOrDefault(++quiz.CurrentQuestion);
 
-            if (quiz.CurrentQuestion >= quiz.Questions.Count)
+            if (quiz.CurrentQuestion == quiz.Questions.Count)
             {
                 EndQuiz();
             }
-            
-            Clients.Group(quiz.Name).question(question.Statement,
-                JsonConvert.SerializeObject(ScrambleAnswers(question.CorrectAnswer, question.WrongAnswers)));
+            else
+            {
+                // Send client the question and scrambled answers
+                Clients.Group(quiz.Name).question(question.Statement,
+                    JsonConvert.SerializeObject(ScrambleAnswers(question.CorrectAnswer, question.WrongAnswers)));
+            }
         }
 
         public void SubmitAnswer(string answer)
@@ -68,6 +71,7 @@ namespace QuizYourFriends.Hubs
             var player = GetCurrentPlayer();
             var question = quiz.Questions.ElementAt(quiz.CurrentQuestion);
 
+            // If a player has already answered a question they will not be given another chance ;)
             if (question.AnsweredBy.Any(conId => Context.ConnectionId == conId))
             {
                 Clients.Caller.message("You have already answered this question");
@@ -87,6 +91,7 @@ namespace QuizYourFriends.Hubs
                 }
             }
 
+            // Check if all users have answered the question, if so proceed to the next one
             if (question.AnsweredBy.Count == quiz.Players.Count)
             {
                 Question();
