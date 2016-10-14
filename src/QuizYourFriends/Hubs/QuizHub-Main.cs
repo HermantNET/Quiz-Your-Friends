@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
@@ -16,8 +17,26 @@ namespace QuizYourFriends.Hubs
         public override Task OnConnected()
         {
             // If name is empty or null, assign dynamic anonymous identity
-            string name = Context.QueryString["name"];
-            name = name.Trim() == "" || name == null ? "Anon" + (ConnectedPlayers.Count + 1 + (new Random().Next(0, 3500))) : name.Trim();
+            string name = Context.QueryString["name"].Trim();
+            if (name == "" || name == null)
+            {
+                name = "Anon";
+            }
+
+            bool unique = false;
+            while (!unique)
+            {
+                if (ConnectedPlayers.Exists(p => p.Name == name))
+                {
+                    name += new Random().Next(0, ConnectedPlayers.Count + 10000);
+                }
+                else
+                {
+                    unique = true;
+                }
+            }
+
+            Clients.Caller.setName(name);
 
             Player player = new Player(Context.ConnectionId, name);
             ConnectedPlayers.Add(player);

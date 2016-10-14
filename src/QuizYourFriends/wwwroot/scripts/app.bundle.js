@@ -21969,7 +21969,7 @@
 	            maxPlayers: 0,
 	            players: [],
 	            playersFinal: [],
-	            name: prompt("Display name: "),
+	            name: 'Anon',
 	            messages: [],
 	            question: 'none',
 	            answers: [],
@@ -21978,7 +21978,7 @@
 	    },
 	    componentWillMount: function componentWillMount() {
 	        // Set the users name server side
-	        $.connection.hub.qs = { name: this.state.name };
+	        $.connection.hub.qs = { name: prompt("Display name: ") };
 	        $.connection.hub.start().done(function () {
 	            this.setState({
 	                connected: true
@@ -21988,6 +21988,12 @@
 	    componentDidMount: function componentDidMount() {
 	
 	        // Client side response code for SignalR
+	        this.state.hub.client.setName = function (name) {
+	            this.setState({
+	                name: name
+	            });
+	        }.bind(this);
+	
 	        this.state.hub.client.message = function (msg) {
 	            this.setState({
 	                messages: this.state.messages.concat(msg)
@@ -22127,6 +22133,12 @@
 	        return React.createElement(
 	            'div',
 	            null,
+	            React.createElement(
+	                'p',
+	                null,
+	                'Connected as: ',
+	                this.state.name
+	            ),
 	            React.createElement(
 	                'p',
 	                null,

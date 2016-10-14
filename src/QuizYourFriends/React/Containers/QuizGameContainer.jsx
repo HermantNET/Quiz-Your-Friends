@@ -21,7 +21,7 @@ var QuizGameContainer = React.createClass({
             maxPlayers: 0,
             players: [],
             playersFinal: [],
-            name: prompt("Display name: "),
+            name: 'Anon',
             messages: [],
             question: 'none',
             answers: [],
@@ -30,7 +30,7 @@ var QuizGameContainer = React.createClass({
     },
     componentWillMount: function () {
         // Set the users name server side
-        $.connection.hub.qs = { name: this.state.name };
+        $.connection.hub.qs = { name: prompt("Display name: ") };
         $.connection.hub.start().done(function () {
             this.setState({
                 connected: true
@@ -40,6 +40,12 @@ var QuizGameContainer = React.createClass({
     componentDidMount: function () {
 
         // Client side response code for SignalR
+        this.state.hub.client.setName = function (name) {
+            this.setState({
+                name: name
+            });
+        }.bind(this);
+
         this.state.hub.client.message = function (msg) {
             this.setState({
                 messages: this.state.messages.concat(msg)
@@ -171,6 +177,7 @@ var QuizGameContainer = React.createClass({
 
         return (
             <div>
+                <p>Connected as: {this.state.name}</p>
                 <p>{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
                 <QuizMenu createQuiz={this.createQuiz}
                           joinQuiz={this.joinQuiz}
