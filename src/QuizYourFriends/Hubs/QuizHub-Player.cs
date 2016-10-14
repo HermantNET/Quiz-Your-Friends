@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.AspNet.SignalR;
 using QuizYourFriends.Models;
+using Newtonsoft.Json;
 
 namespace QuizYourFriends.Hubs
 {
@@ -27,6 +25,12 @@ namespace QuizYourFriends.Hubs
             if (GetCurrentQuiz() == null)
                 return false;
             return true;
+        }
+
+        private void PlayersInLobby(Quiz quiz)
+        {
+            var players = quiz.Players.Select(p => new { p.Name, p.Score }).OrderByDescending(p => p.Score).ThenBy(p => p.Name);
+            Clients.Group(quiz.Name).playersInLobby(JsonConvert.SerializeObject(players));
         }
     }
 }

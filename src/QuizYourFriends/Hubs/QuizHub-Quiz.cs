@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using QuizYourFriends.Models;
-using Newtonsoft.Json;
 
 namespace QuizYourFriends.Hubs
 {
     // Quiz Methods
     public partial class QuizHub : Hub
     {
-        private void PlayersInLobby(Quiz quiz)
-        {
-                var players = quiz.Players.Select(p => new { p.Name, p.Score }).OrderByDescending(p => p.Score).ThenBy(p => p.Name);
-                Clients.Group(quiz.Name).playersInLobby(JsonConvert.SerializeObject(players));
-        }
 
         public void CreateQuiz(string name, string max)
         {
             string trimmedName = name == null ? "" : name.Trim();
-            if (Quizzes.Where(quiz => quiz.Name == trimmedName) != null)
+            if (Quizzes.FirstOrDefault(quiz => quiz.Name == trimmedName) == null)
             {
                 int maxPlayers;
                 if (trimmedName == "")
@@ -131,6 +124,9 @@ namespace QuizYourFriends.Hubs
                 else
                 {
                     quiz.Players.Remove(player);
+                    PlayersInLobby(quiz);
+                    MessageGroup(player.Name + " left the room", quiz.Name);
+
                     // Error occurs 10 seconds after client closes quiz tab
                     try
                     {
@@ -140,15 +136,12 @@ namespace QuizYourFriends.Hubs
                     {
                         Console.WriteLine(e.Message);
                     }
-
-                    MessageGroup(player.Name + " left the room", quiz.Name);
                 }
 
                 player.Score = 0;
                 player.Ready = false;
                 Clients.Caller.reset();
                 Clients.Caller.message("Left room " + quiz.Name);
-                PlayersInLobby(quiz);
             }
         }
 
@@ -173,12 +166,11 @@ namespace QuizYourFriends.Hubs
         private void EndQuiz()
         {
             var quiz = GetCurrentQuiz();
+            quiz.Players.ForEach(player => { player.Ready = false; player.Score = 0; });
+            quiz.Started = false;
+            quiz.CurrentQuestion = -1;
+            quiz.Questions.Clear();
             Clients.Group(quiz.Name).quizEnded(true);
-        }
-
-        private void PlayAgain()
-        {
-
         }
 
         public void ReadyUp()
@@ -189,6 +181,10 @@ namespace QuizYourFriends.Hubs
             if (quiz == null)
             {
                 Clients.Caller.message("You need to be in a room to ready up");
+            }
+            else if (quiz.Started)
+            {
+                Clients.Caller.message("Cannot change ready state: Quiz has already started");
             }
             else
             {

@@ -5,7 +5,7 @@ function Question(props) {
         <div>
             <p>{props.question}</p>
             {props.answers.map((answer, index) =>
-                <button key={"answer"+index} onClick={props.chooseAnswer}>
+                <button key={"answer"+index} onClick={props.submitAnswer}>
                     {answer}
                 </button>
             )}

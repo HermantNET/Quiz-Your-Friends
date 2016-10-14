@@ -21968,10 +21968,12 @@
 	            room: 'none',
 	            maxPlayers: 0,
 	            players: [],
+	            playersFinal: [],
 	            name: prompt("Display name: "),
 	            messages: [],
 	            question: 'none',
-	            answers: []
+	            answers: [],
+	            answered: false
 	        };
 	    },
 	    componentWillMount: function componentWillMount() {
@@ -22022,13 +22024,15 @@
 	        this.state.hub.client.question = function (question, answers) {
 	            this.setState({
 	                question: question,
-	                answers: JSON.parse(answers)
+	                answers: JSON.parse(answers),
+	                answered: false
 	            });
 	        }.bind(this);
 	
 	        this.state.hub.client.quizEnded = function (bool) {
 	            this.setState({
-	                ended: bool
+	                ended: bool,
+	                playersFinal: this.state.players
 	            });
 	        }.bind(this);
 	
@@ -22042,7 +22046,8 @@
 	                room: 'none',
 	                maxPlayers: 0,
 	                answers: [],
-	                players: []
+	                players: [],
+	                playersFinal: []
 	            });
 	        }.bind(this);
 	        // End Client side response code for SignalR
@@ -22066,10 +22071,23 @@
 	        e.preventDefault();
 	        ServerRoutes.SubmitQuestion(this.state.hub, e.target);
 	    },
-	    chooseAnswer: function chooseAnswer(e) {
+	    submitAnswer: function submitAnswer(e) {
 	        ServerRoutes.SubmitAnswer(this.state.hub, e.target.textContent);
+	        this.setState({
+	            answered: true
+	        });
 	    },
 	    // End SignalR call server code
+	
+	    playAgain: function playAgain() {
+	        this.setState({
+	            started: false,
+	            ended: false,
+	            playersFinal: [],
+	            question: [],
+	            answers: []
+	        });
+	    },
 	
 	    render: function render() {
 	        var view;
@@ -22090,11 +22108,11 @@
 	        } else if (this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(ComposeQuestion, { submit: this.submitQuestion });
 	        } else if (this.state.started && !this.state.ended) {
-	            view = React.createElement(Question, { chooseAnswer: this.chooseAnswer,
+	            view = React.createElement(Question, { submitAnswer: this.submitAnswer,
 	                question: this.state.question,
 	                answers: this.state.answers });
 	        } else if (this.state.ended) {
-	            view = React.createElement(QuizEnd, { players: this.state.players });
+	            view = React.createElement(QuizEnd, { players: this.state.playersFinal, playAgain: this.playAgain });
 	        } else {
 	            view = React.createElement(
 	                'p',
@@ -22342,7 +22360,7 @@
 	        props.answers.map(function (answer, index) {
 	            return React.createElement(
 	                "button",
-	                { key: "answer" + index, onClick: props.chooseAnswer },
+	                { key: "answer" + index, onClick: props.submitAnswer },
 	                answer
 	            );
 	        })
@@ -22369,15 +22387,16 @@
 	        React.createElement(
 	            "p",
 	            null,
-	            props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!"
+	            props.players.length > 1 ? props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!" : props.players[0].Name + " is the only one left :("
 	        ),
 	        React.createElement(
 	            "ul",
 	            null,
-	            props.players.map(function (player) {
-	                return React.createElement(
+	            props.players.map(function (player, index) {
+	                return;
+	                React.createElement(
 	                    "li",
-	                    null,
+	                    { key: "scoreboard" + index },
 	                    player.Name,
 	                    " ",
 	                    React.createElement(
@@ -22387,6 +22406,11 @@
 	                    )
 	                );
 	            })
+	        ),
+	        React.createElement(
+	            "button",
+	            { onClick: props.playAgain },
+	            "Play Again"
 	        )
 	    );
 	}

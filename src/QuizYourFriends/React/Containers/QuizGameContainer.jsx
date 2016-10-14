@@ -20,10 +20,12 @@ var QuizGameContainer = React.createClass({
             room: 'none',
             maxPlayers: 0,
             players: [],
+            playersFinal: [],
             name: prompt("Display name: "),
             messages: [],
             question: 'none',
-            answers: []
+            answers: [],
+            answered: false
         }
     },
     componentWillMount: function () {
@@ -74,13 +76,15 @@ var QuizGameContainer = React.createClass({
         this.state.hub.client.question = function (question, answers) {
             this.setState({
                 question: question,
-                answers: JSON.parse(answers)
+                answers: JSON.parse(answers),
+                answered: false
             });
         }.bind(this);
 
         this.state.hub.client.quizEnded = function (bool) {
             this.setState({
-                ended: bool
+                ended: bool,
+                playersFinal: this.state.players
             });
         }.bind(this);
 
@@ -94,7 +98,8 @@ var QuizGameContainer = React.createClass({
                 room: 'none',
                 maxPlayers: 0,
                 answers: [],
-                players: []
+                players: [],
+                playersFinal: []
             })
         }.bind(this);
         // End Client side response code for SignalR
@@ -119,10 +124,23 @@ var QuizGameContainer = React.createClass({
         e.preventDefault();
         ServerRoutes.SubmitQuestion(this.state.hub, e.target);
     },
-    chooseAnswer: function (e) {
+    submitAnswer: function (e) {
         ServerRoutes.SubmitAnswer(this.state.hub, e.target.textContent);
+        this.setState({
+            answered: true
+        });
     },
     // End SignalR call server code
+
+    playAgain: function () {
+        this.setState({
+            started: false,
+            ended: false,
+            playersFinal: [],
+            question: [],
+            answers: []
+        });
+    },
 
     render: function () {
         var view;
@@ -139,12 +157,12 @@ var QuizGameContainer = React.createClass({
             view = <ComposeQuestion submit={this.submitQuestion} />
         }
         else if (this.state.started && !this.state.ended) {
-            view = <Question chooseAnswer={this.chooseAnswer}
+            view = <Question submitAnswer={this.submitAnswer}
                              question={this.state.question}
                              answers={this.state.answers} />
         }
         else if (this.state.ended) {
-            view = <QuizEnd players={this.state.players} />;
+            view = <QuizEnd players={this.state.playersFinal} playAgain={this.playAgain} />;
         }
         else {
             view = <p>error</p>;

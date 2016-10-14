@@ -3,11 +3,22 @@
 function QuizEnd(props) {
     return (
       <div>
-          <p>{props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!"}</p>
+          <p>
+              {
+                props.players.length > 1 ?
+                (props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!")
+                :
+                props.players[0].Name + " is the only one left :("
+              }
+          </p>
           <ul>
-              {props.players.map((player) => { return <li>{player.Name} <span>{player.Score}</span></li> })}
+              {props.players.map((player, index) => {
+                  return
+              <li key={"scoreboard" + index }>{player.Name} <span>{player.Score}</span></li>
+              })}
           </ul>
-      </div>  
+          <button onClick={props.playAgain}>Play Again</button>
+      </div>
     );
 }
 
