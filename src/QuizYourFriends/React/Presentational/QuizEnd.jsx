@@ -12,9 +12,8 @@ function QuizEnd(props) {
               }
           </p>
           <ul>
-              {props.players.map((player, index) => {
-                  return
-              <li key={"scoreboard" + index }>{player.Name} <span>{player.Score}</span></li>
+              {props.players.map((pl, index) => {
+                  return <li key={"scoreboard" + index}>{pl.Name} <span>{pl.Score}</span></li>
               })}
           </ul>
           <button onClick={props.playAgain}>Play Again</button>

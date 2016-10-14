@@ -138,7 +138,8 @@ var QuizGameContainer = React.createClass({
             ended: false,
             playersFinal: [],
             question: [],
-            answers: []
+            answers: [],
+            players: this.state.players.map((player) => { player.Score = 0; return player; })
         });
     },
 

@@ -22085,7 +22085,10 @@
 	            ended: false,
 	            playersFinal: [],
 	            question: [],
-	            answers: []
+	            answers: [],
+	            players: this.state.players.map(function (player) {
+	                player.Score = 0;return player;
+	            })
 	        });
 	    },
 	
@@ -22392,17 +22395,16 @@
 	        React.createElement(
 	            "ul",
 	            null,
-	            props.players.map(function (player, index) {
-	                return;
-	                React.createElement(
+	            props.players.map(function (pl, index) {
+	                return React.createElement(
 	                    "li",
 	                    { key: "scoreboard" + index },
-	                    player.Name,
+	                    pl.Name,
 	                    " ",
 	                    React.createElement(
 	                        "span",
 	                        null,
-	                        player.Score
+	                        pl.Score
 	                    )
 	                );
 	            })
