@@ -7,12 +7,14 @@ var UserList = require('.././Presentational/UserList.jsx');
 var ComposeQuestion = require('.././Presentational/ComposeQuestion.jsx');
 var Question = require('.././Presentational/Question.jsx');
 var QuizEnd = require('.././Presentational/QuizEnd.jsx');
+var NewQuizMenu = require('.././Presentational/NewQuizMenu.jsx');
 
 var QuizGameContainer = React.createClass({
     getInitialState: function () {
         return {
             hub: $.connection.quizHub,
             connected: false,
+            createQuiz: false,
             getQuestions: false,
             started: false,
             ended: false,
@@ -120,8 +122,11 @@ var QuizGameContainer = React.createClass({
     },
 
     // SignalR call server code
-    createQuiz: function () {
-        ServerRoutes.CreateQuiz(this.state.hub);
+    createQuiz: function (quiz) {
+        ServerRoutes.CreateQuiz(this.state.hub, quiz);
+        this.setState({
+            createQuiz: false
+        });
     },
     joinQuiz: function () {
         ServerRoutes.JoinQuiz(this.state.hub);
@@ -148,6 +153,11 @@ var QuizGameContainer = React.createClass({
     },
     // End SignalR call server code
 
+    createNewQuiz: function () {
+        this.setState({
+            createQuiz: !this.state.createQuiz
+        });
+    },
     playAgain: function () {
         this.setState({
             started: false,
@@ -155,7 +165,8 @@ var QuizGameContainer = React.createClass({
             playersFinal: [],
             question: [],
             answers: [],
-            players: this.state.players.map((player) => { player.Score = 0; return player; })
+            players: this.state.players.map((player) => { player.Score = 0; return player; }),
+            readyCount: 0
         });
     },
 
@@ -168,7 +179,7 @@ var QuizGameContainer = React.createClass({
             view = <p>Create or join a room to play</p>;
         }
         else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
-            view = <QuizRoom ready={this.state.readyCount} playerCount={this.state.players == [] ? 1 : this.state.players.length}/>;
+            view = <QuizRoom ready={this.state.readyCount} playerCount={this.state.players == [] ? 1 : this.state.players.length } />;
         }
         else if (this.state.getQuestions && !this.state.started) {
             view = <ComposeQuestion submit={this.submitQuestion} />
@@ -179,22 +190,24 @@ var QuizGameContainer = React.createClass({
                              answers={this.state.answers} />
         }
         else if (this.state.ended) {
-            view = <QuizEnd players={this.state.playersFinal} playAgain={this.playAgain} />;
+            view = <QuizEnd players={this.state.playersFinal} playAgain={this.playAgain } />;
         }
         else {
             view = <p>error</p>;
         }
 
         return (
-            <div>
-                <p>Connected as: {this.state.name}</p>
-                <p>{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
-                <QuizMenu createQuiz={this.createQuiz}
+            <div className="App">
+                <h2 className="Title">Quiz your Friends</h2>
+                <p className="ConnectedAs">Connected as: {this.state.name}</p>
+                <p className="RoomState">{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
+                <QuizMenu createNewQuiz={this.createNewQuiz}
                           joinQuiz={this.joinQuiz}
                           leaveQuiz={this.leaveQuiz}
                           readyUp={this.readyUp} />
+                {this.state.createQuiz ? <NewQuizMenu createQuiz={this.createQuiz} name={this.state.name } /> : ''}
                 {view}
-                {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers} /> : ''}
+                {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers } /> : ''}
                 <MessageList messages={this.state.messages} />
             </div>
         );

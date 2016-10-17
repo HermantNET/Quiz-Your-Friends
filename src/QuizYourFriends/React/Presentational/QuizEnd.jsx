@@ -2,7 +2,7 @@
 
 function QuizEnd(props) {
     return (
-      <div>
+      <div className="QuizEnd">
           <p>
               {
                 props.players.length > 1 ?

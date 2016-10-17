@@ -2,7 +2,7 @@
 
 function UserList(props) {
     return (
-        <div>
+        <div className="UserList">
             <p>Players in lobby: {props.players.length}/{props.max}</p>
             <ul>
                 {props.players.map((player, index) => {
@@ -14,7 +14,7 @@ function UserList(props) {
 }
 
 UserList.propTypes = {
-    players: React.PropTypes.arrayOf(React.PropTypes.objectOf(React.PropTypes.string, React.PropTypes.number)),
+    players: React.PropTypes.arrayOf(React.PropTypes.object),
     max: React.PropTypes.number
 }
 

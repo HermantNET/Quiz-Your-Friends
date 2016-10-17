@@ -2,11 +2,11 @@
 
 function QuizMenu(props) {
     return (
-       <div>
-           <button onClick={props.createQuiz}>Create Quiz</button>
-           <button onClick={props.joinQuiz}>Join Quiz</button>
-           <button onClick={props.leaveQuiz}>Leave Quiz</button>
-           <button onClick={props.readyUp}>Ready Up</button>
+       <div className="QuizMenu">
+           <div className="Button" onClick={props.createNewQuiz}>Create Quiz</div>
+           <div className="Button" onClick={props.joinQuiz}>Join Quiz</div>
+           <div className="Button" onClick={props.leaveQuiz}>Leave Quiz</div>
+           <div className="Button" onClick={props.readyUp}>Ready Up</div>
        </div>
     );
 }

@@ -10,7 +10,7 @@ namespace QuizYourFriends.Hubs
     public partial class QuizHub : Hub
     {
 
-        public void CreateQuiz(string name, string max)
+        public void CreateQuiz(bool priv, string name, string max)
         {
             string trimmedName = name == null ? "" : name.Trim();
             if (Quizzes.FirstOrDefault(quiz => quiz.Name == trimmedName) == null)
@@ -34,17 +34,18 @@ namespace QuizYourFriends.Hubs
                 }
                 else
                 {
-                    // 
                     if (IsInRoom())
                     {
                         LeaveQuiz();
                     }
 
                     if (maxPlayers > 20)
+                    {
                         maxPlayers = 20;
+                    }
 
                     Groups.Add(Context.ConnectionId, trimmedName);
-                    Quizzes.Add(new Quiz(trimmedName, maxPlayers, GetCurrentPlayer()));
+                    Quizzes.Add(new Quiz(priv, trimmedName, maxPlayers, GetCurrentPlayer()));
                     Clients.Caller.message("Room '" + trimmedName + "' created");
                     Clients.Caller.inRoom(true, name, maxPlayers);
                     PlayersInLobby(GetCurrentQuiz());
@@ -54,7 +55,7 @@ namespace QuizYourFriends.Hubs
             {
                 Clients.Caller.message("Room already exists");
             }
-            
+
         }
 
         public async void JoinQuiz(string name)
@@ -98,7 +99,7 @@ namespace QuizYourFriends.Hubs
             }
         }
 
-        public async void LeaveQuiz()
+        public void LeaveQuiz()
         {
             var player = GetCurrentPlayer();
             var quiz = GetCurrentQuiz();
@@ -112,16 +113,7 @@ namespace QuizYourFriends.Hubs
                 // Delete Quiz room if no players are in it
                 if (quiz.Players.Count - 1 == 0)
                 {
-                    // TODO fix TaskCanceledException, refactor
-                    // Error occurs 10 seconds after client closes quiz tab
-                    try
-                    {
-                        await Groups.Remove(Context.ConnectionId, quiz.Name);
-                    }
-                    catch (TaskCanceledException e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
+                    Groups.Remove(Context.ConnectionId, quiz.Name);
                     Quizzes.Remove(quiz);
                 }
                 else
@@ -129,16 +121,7 @@ namespace QuizYourFriends.Hubs
                     quiz.Players.Remove(player);
                     PlayersInLobby(quiz);
                     MessageGroup(player.Name + " left the room", quiz.Name);
-
-                    // Error occurs 10 seconds after client closes quiz tab
-                    try
-                    {
-                        await Groups.Remove(Context.ConnectionId, quiz.Name);
-                    }
-                    catch (TaskCanceledException e)
-                    {
-                        Console.WriteLine(e.Message);
-                    }
+                    Groups.Remove(Context.ConnectionId, quiz.Name);
                 }
 
                 player.Score = 0;
@@ -194,7 +177,7 @@ namespace QuizYourFriends.Hubs
                 player.Ready = !player.Ready;
                 Clients.Group(quiz.Name).message(player.Name + ((player.Ready == true) ? " is ready" : " is not ready"));
                 PlayersReady();
-                if(quiz.Players.Count > 1 && quiz.Players.Where(p => p.Ready).Count() == quiz.Players.Count)
+                if (quiz.Players.Count > 1 && quiz.Players.Where(p => p.Ready).Count() == quiz.Players.Count)
                 {
                     GetQuestions();
                 }

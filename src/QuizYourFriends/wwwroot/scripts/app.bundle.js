@@ -52,6 +52,8 @@
 	var React = __webpack_require__(/*! react */ 1);
 	var ReactDOM = __webpack_require__(/*! react-dom */ 34);
 	var QuizGameContainer = __webpack_require__(/*! ./Containers/QuizGameContainer.jsx */ 172);
+	// Node-Sass doesn't work at school development machine.
+	//var css = require('../scss/site.scss');
 	
 	ReactDOM.render(React.createElement(QuizGameContainer, null), document.getElementById('app'));
 
@@ -21953,6 +21955,7 @@
 	var ComposeQuestion = __webpack_require__(/*! .././Presentational/ComposeQuestion.jsx */ 178);
 	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 179);
 	var QuizEnd = __webpack_require__(/*! .././Presentational/QuizEnd.jsx */ 180);
+	var NewQuizMenu = __webpack_require__(/*! .././Presentational/NewQuizMenu.jsx */ 181);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -21961,6 +21964,7 @@
 	        return {
 	            hub: $.connection.quizHub,
 	            connected: false,
+	            createQuiz: false,
 	            getQuestions: false,
 	            started: false,
 	            ended: false,
@@ -22067,8 +22071,11 @@
 	    },
 	
 	    // SignalR call server code
-	    createQuiz: function createQuiz() {
-	        ServerRoutes.CreateQuiz(this.state.hub);
+	    createQuiz: function createQuiz(quiz) {
+	        ServerRoutes.CreateQuiz(this.state.hub, quiz);
+	        this.setState({
+	            createQuiz: false
+	        });
 	    },
 	    joinQuiz: function joinQuiz() {
 	        ServerRoutes.JoinQuiz(this.state.hub);
@@ -22095,6 +22102,11 @@
 	    },
 	    // End SignalR call server code
 	
+	    createNewQuiz: function createNewQuiz() {
+	        this.setState({
+	            createQuiz: !this.state.createQuiz
+	        });
+	    },
 	    playAgain: function playAgain() {
 	        this.setState({
 	            started: false,
@@ -22104,7 +22116,8 @@
 	            answers: [],
 	            players: this.state.players.map(function (player) {
 	                player.Score = 0;return player;
-	            })
+	            }),
+	            readyCount: 0
 	        });
 	    },
 	
@@ -22142,22 +22155,28 @@
 	
 	        return React.createElement(
 	            'div',
-	            null,
+	            { className: 'App' },
+	            React.createElement(
+	                'h2',
+	                { className: 'Title' },
+	                'Quiz your Friends'
+	            ),
 	            React.createElement(
 	                'p',
-	                null,
+	                { className: 'ConnectedAs' },
 	                'Connected as: ',
 	                this.state.name
 	            ),
 	            React.createElement(
 	                'p',
-	                null,
+	                { className: 'RoomState' },
 	                this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room
 	            ),
-	            React.createElement(QuizMenu, { createQuiz: this.createQuiz,
+	            React.createElement(QuizMenu, { createNewQuiz: this.createNewQuiz,
 	                joinQuiz: this.joinQuiz,
 	                leaveQuiz: this.leaveQuiz,
 	                readyUp: this.readyUp }),
+	            this.state.createQuiz ? React.createElement(NewQuizMenu, { createQuiz: this.createQuiz, name: this.state.name }) : '',
 	            view,
 	            this.state.inRoom ? React.createElement(UserList, { players: this.state.players, max: this.state.maxPlayers }) : '',
 	            React.createElement(MessageList, { messages: this.state.messages })
@@ -22174,33 +22193,33 @@
   \*******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	var React = __webpack_require__(/*! react */ 1);
 	
 	function QuizMenu(props) {
 	    return React.createElement(
-	        'div',
-	        null,
+	        "div",
+	        { className: "QuizMenu" },
 	        React.createElement(
-	            'button',
-	            { onClick: props.createQuiz },
-	            'Create Quiz'
+	            "div",
+	            { className: "Button", onClick: props.createNewQuiz },
+	            "Create Quiz"
 	        ),
 	        React.createElement(
-	            'button',
-	            { onClick: props.joinQuiz },
-	            'Join Quiz'
+	            "div",
+	            { className: "Button", onClick: props.joinQuiz },
+	            "Join Quiz"
 	        ),
 	        React.createElement(
-	            'button',
-	            { onClick: props.leaveQuiz },
-	            'Leave Quiz'
+	            "div",
+	            { className: "Button", onClick: props.leaveQuiz },
+	            "Leave Quiz"
 	        ),
 	        React.createElement(
-	            'button',
-	            { onClick: props.readyUp },
-	            'Ready Up'
+	            "div",
+	            { className: "Button", onClick: props.readyUp },
+	            "Ready Up"
 	        )
 	    );
 	}
@@ -22214,31 +22233,31 @@
   \*******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	var React = __webpack_require__(/*! react */ 1);
 	
 	function QuizRoom(props) {
 	    return React.createElement(
-	        'div',
-	        null,
+	        "div",
+	        { className: "QuizRoom" },
 	        React.createElement(
-	            'p',
+	            "p",
 	            null,
-	            'Players ready: ',
+	            "Players ready: ",
 	            props.ready,
-	            '/',
+	            "/",
 	            props.playerCount
 	        ),
 	        React.createElement(
-	            'p',
+	            "p",
 	            null,
-	            'Waiting for everyone to \'Ready Up\''
+	            "Waiting for everyone to 'Ready Up'"
 	        )
 	    );
 	}
 	
-	QuizRoom.PropTypes = {
+	QuizRoom.propTypes = {
 	    ready: React.PropTypes.number,
 	    playerCount: React.PropTypes.number
 	};
@@ -22252,11 +22271,11 @@
   \***************************************/
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 	
 	module.exports = {
-	    CreateQuiz: function CreateQuiz(hub) {
-	        hub.invoke('CreateQuiz', prompt("Room name: "), prompt("Max players: "));
+	    CreateQuiz: function CreateQuiz(hub, quiz) {
+	        hub.invoke('CreateQuiz', quiz.isPrivate.checked, quiz.quizRoomName.value, quiz.maxPlayers.value);
 	    },
 	
 	    JoinQuiz: function JoinQuiz(hub) {
@@ -22326,7 +22345,7 @@
 	function UserList(props) {
 	    return React.createElement(
 	        'div',
-	        null,
+	        { className: 'UserList' },
 	        React.createElement(
 	            'p',
 	            null,
@@ -22356,7 +22375,7 @@
 	}
 	
 	UserList.propTypes = {
-	    players: React.PropTypes.arrayOf(React.PropTypes.objectOf(React.PropTypes.string, React.PropTypes.number)),
+	    players: React.PropTypes.arrayOf(React.PropTypes.object),
 	    max: React.PropTypes.number
 	};
 	
@@ -22434,7 +22453,7 @@
 	function QuizEnd(props) {
 	    return React.createElement(
 	        "div",
-	        null,
+	        { className: "QuizEnd" },
 	        React.createElement(
 	            "p",
 	            null,
@@ -22466,6 +22485,73 @@
 	}
 	
 	module.exports = QuizEnd;
+
+/***/ },
+/* 181 */
+/*!**********************************************!*\
+  !*** ./React/Presentational/NewQuizMenu.jsx ***!
+  \**********************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	var NewQuizMenu = React.createClass({
+	    displayName: "NewQuizMenu",
+	
+	    propTypes: {
+	        createQuiz: React.PropTypes.func.isRequired,
+	        name: React.PropTypes.string
+	    },
+	    preventRefresh: function preventRefresh(e) {
+	        e.preventDefault();
+	        this.props.createQuiz(e.target);
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            "div",
+	            { className: "NewQuizMenu" },
+	            React.createElement(
+	                "p",
+	                null,
+	                "Create New Quiz"
+	            ),
+	            React.createElement(
+	                "form",
+	                { onSubmit: this.preventRefresh },
+	                React.createElement(
+	                    "label",
+	                    { htmlFor: "quizRoomName" },
+	                    "Room Name: "
+	                ),
+	                React.createElement("input", { type: "text",
+	                    name: "quizRoomName",
+	                    placeholder: this.props.name == null ? "Your room name" : this.props.name + "'s room" }),
+	                React.createElement("br", null),
+	                React.createElement(
+	                    "label",
+	                    { htmlFor: "maxPlayers" },
+	                    "Max Players: "
+	                ),
+	                React.createElement("input", { type: "number",
+	                    name: "maxPlayers",
+	                    placeholder: "Max value is 20" }),
+	                React.createElement("br", null),
+	                React.createElement(
+	                    "label",
+	                    { htmlFor: "isPrivate" },
+	                    "Private Lobby: "
+	                ),
+	                React.createElement("input", { type: "checkbox", name: "isPrivate" }),
+	                React.createElement("br", null),
+	                React.createElement("input", { type: "submit", value: "Create Quiz" })
+	            )
+	        );
+	    }
+	});
+	
+	module.exports = NewQuizMenu;
 
 /***/ }
 /******/ ]);

@@ -1,6 +1,6 @@
 ﻿module.exports = {
-    CreateQuiz: function (hub) {
-        hub.invoke('CreateQuiz', prompt("Room name: "), prompt("Max players: "));
+    CreateQuiz: function (hub, quiz) {
+        hub.invoke('CreateQuiz', quiz.isPrivate.checked, quiz.quizRoomName.value, quiz.maxPlayers.value);
     },
 
     JoinQuiz: function (hub) {
