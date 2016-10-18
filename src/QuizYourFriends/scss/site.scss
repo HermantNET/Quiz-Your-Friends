@@ -10,10 +10,11 @@
     height: 100%;
     width: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
 
     & > div {
-        padding: 0.5rem 1rem;
+        padding: 1rem;
     }
 
     .Options {
@@ -32,25 +33,77 @@
     }
 }
 
-.UserList {
-    width: 80%;
-    & > ul {
-        width: 100%;
+.Heavy {
+    font-weight: 500;
+}
 
-        & > li {
-            display: flex;
-            justify-content: space-between;
-            align-items:flex-start;
+.Button {
+    margin: 0.5rem;
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 0.2rem;
+    background-color: rgba(0,0,0,0.1);
 
-            &  > span {
-            
-            }
+    &:active {
+        box-shadow: 0.05rem 0.1rem 0.2rem rgba(0,0,0,0.6) inset;
+        background-color: rgba(0,0,0,0.2);
+    }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+
+    label {
+        padding-top: 1rem;
+    }
+
+    input {
+        font-size: 1.2rem;
+    }
+
+    input[type=checkbox] {
+        margin: 1rem;
+        transform: scale(2.5);
+    }
+}
+
+input[type=submit] {
+    width: 100%;
+    border: none;
+    height: 3rem;
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 0.2rem;
+
+    &:active {
+        border: none;
+        box-shadow: 0.05rem 0.1rem 0.2rem rgba(0,0,0,0.6) inset;
+        background-color: rgba(0,0,0,0.2);
+    }
+
+    &:focus {
+        outline: 0;
+    }
+}
+
+@media(min-width: 667px) {
+    .App {
+        flex-direction: row;
+
+        & > div {
+            padding-top: 10vh;
         }
     }
 }
 
-.MessageList {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    max-height: 50%;
+@media(min-width: 1200px) {
+    .App {
+        .Options {
+            padding-left: 20vh;
+        }
+
+        .UsersAndMessages {
+            padding-right: 20vh;
+        }
+    }
 }

@@ -214,8 +214,8 @@ var QuizGameContainer = React.createClass({
             <div className="App">
                 <div className="Options">
                     <h2 className="Title">Quiz your Friends</h2>
-                    <p className="ConnectedAs">Connected as: {this.state.name}</p>
-                    <p className="RoomState">{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
+                    <p className="ConnectedAs">Connected as: <span className="Heavy">{this.state.name}</span></p>
+                    <div className="RoomState">{this.state.room == 'none' ? <p>Not in a room</p> : <p>Currently in room: <span className="Heavy">{this.state.room}</span></p> }</div>
                     <QuizMenu createNewQuiz={this.createNewQuiz}
                               joinQuiz={() => this.joinQuiz(null)}
                               leaveQuiz={this.leaveQuiz}
@@ -228,7 +228,7 @@ var QuizGameContainer = React.createClass({
                 </div>
                 <div className="UsersAndMessages">
                     {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers } /> : ''}
-                    <p>Messages</p>
+                    <h4>Messages</h4>
                     <MessageList messages={this.state.messages} />
                 </div>
             </div>

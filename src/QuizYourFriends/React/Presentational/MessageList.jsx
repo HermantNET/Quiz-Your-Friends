@@ -1,5 +1,6 @@
 ﻿var React = require('react');
 var ReactDOM = require('react-dom');
+var css = require('../../scss/MessageList.scss');
 
 var MessageList = React.createClass({
     componentDidUpdate: function () {

@@ -12,7 +12,7 @@ var NewQuizMenu = React.createClass({
     render: function () {
         return (
       <div className="NewQuizMenu">
-          <p>Create New Quiz</p>
+          <h3>Create New Quiz</h3>
           <form onSubmit={this.preventRefresh}>
               <label htmlFor="quizRoomName">Room Name: </label>
               <input type="text"

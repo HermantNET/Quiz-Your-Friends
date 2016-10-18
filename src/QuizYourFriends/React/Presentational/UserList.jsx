@@ -1,9 +1,10 @@
 ﻿var React = require('react');
+var css = require('../../scss/UserList.scss');
 
 function UserList(props) {
     return (
         <div className="UserList">
-            <p>Players in lobby: {props.players.length}/{props.max}</p>
+            <p>Players in lobby: <span className="Heavy">{props.players.length}/{props.max}</span></p>
             <ul>
                 {props.players.map((player, index) => {
                     return <li key={'player'+index}><span>{player.Name}</span><span>{player.Score}</span></li>

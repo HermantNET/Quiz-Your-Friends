@@ -50,7 +50,7 @@ namespace QuizYourFriends.Hubs
                     await Groups.Add(Context.ConnectionId, trimmedName);
                     Quizzes.Add(new Quiz(priv, trimmedName, maxPlayers, player));
                     Clients.Caller.message("Room '" + trimmedName + "' created");
-                    Clients.Caller.inRoom(true, name, maxPlayers);
+                    Clients.Caller.inRoom(true, trimmedName, maxPlayers);
                     PlayersInLobby(GetCurrentQuiz());
                 }
             }

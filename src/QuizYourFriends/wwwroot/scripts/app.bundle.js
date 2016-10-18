@@ -53,7 +53,7 @@
 	var ReactDOM = __webpack_require__(/*! react-dom */ 34);
 	var QuizGameContainer = __webpack_require__(/*! ./Containers/QuizGameContainer.jsx */ 172);
 	// Node-Sass doesn't work at school development machine.
-	//var css = require('../scss/site.scss');
+	var css = __webpack_require__(/*! ../scss/site.scss */ 183);
 	
 	ReactDOM.render(React.createElement(QuizGameContainer, null), document.getElementById('app'));
 
@@ -22185,12 +22185,29 @@
 	                    'p',
 	                    { className: 'ConnectedAs' },
 	                    'Connected as: ',
-	                    this.state.name
+	                    React.createElement(
+	                        'span',
+	                        { className: 'Heavy' },
+	                        this.state.name
+	                    )
 	                ),
 	                React.createElement(
-	                    'p',
+	                    'div',
 	                    { className: 'RoomState' },
-	                    this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room
+	                    this.state.room == 'none' ? React.createElement(
+	                        'p',
+	                        null,
+	                        'Not in a room'
+	                    ) : React.createElement(
+	                        'p',
+	                        null,
+	                        'Currently in room: ',
+	                        React.createElement(
+	                            'span',
+	                            { className: 'Heavy' },
+	                            this.state.room
+	                        )
+	                    )
 	                ),
 	                React.createElement(QuizMenu, { createNewQuiz: this.createNewQuiz,
 	                    joinQuiz: function joinQuiz() {
@@ -22211,7 +22228,7 @@
 	                { className: 'UsersAndMessages' },
 	                this.state.inRoom ? React.createElement(UserList, { players: this.state.players, max: this.state.maxPlayers }) : '',
 	                React.createElement(
-	                    'p',
+	                    'h4',
 	                    null,
 	                    'Messages'
 	                ),
@@ -22308,7 +22325,7 @@
   \***************************************/
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 	
 	module.exports = {
 	    getPublicQuizzes: function getPublicQuizzes(hub) {
@@ -22316,7 +22333,8 @@
 	    },
 	
 	    CreateQuiz: function CreateQuiz(hub, quiz) {
-	        hub.invoke('CreateQuiz', quiz.isPrivate.checked, quiz.quizRoomName.value, quiz.maxPlayers.value);
+	        var maxPlayers = quiz.maxPlayers.value == "" ? "5" : quiz.maxPlayers.value;
+	        hub.invoke('CreateQuiz', quiz.isPrivate.checked, quiz.quizRoomName.value, maxPlayers);
 	    },
 	
 	    JoinQuiz: function JoinQuiz(hub, quizName) {
@@ -22356,6 +22374,7 @@
 	
 	var React = __webpack_require__(/*! react */ 1);
 	var ReactDOM = __webpack_require__(/*! react-dom */ 34);
+	var css = __webpack_require__(/*! ../../scss/MessageList.scss */ 191);
 	
 	var MessageList = React.createClass({
 	    displayName: 'MessageList',
@@ -22391,6 +22410,7 @@
 	'use strict';
 	
 	var React = __webpack_require__(/*! react */ 1);
+	var css = __webpack_require__(/*! ../../scss/UserList.scss */ 189);
 	
 	function UserList(props) {
 	    return React.createElement(
@@ -22400,9 +22420,13 @@
 	            'p',
 	            null,
 	            'Players in lobby: ',
-	            props.players.length,
-	            '/',
-	            props.max
+	            React.createElement(
+	                'span',
+	                { className: 'Heavy' },
+	                props.players.length,
+	                '/',
+	                props.max
+	            )
 	        ),
 	        React.createElement(
 	            'ul',
@@ -22441,20 +22465,36 @@
   \**************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	var React = __webpack_require__(/*! react */ 1);
+	var css = __webpack_require__(/*! ../../scss/ComposeQuestion.scss */ 187);
 	
 	function ComposeQuestion(props) {
 	    return React.createElement(
-	        "form",
-	        { action: "", onSubmit: props.submit },
-	        React.createElement("textarea", { name: "question", placeholder: "Type your question here...", minLength: "3", maxLength: "140", required: true }),
-	        React.createElement("input", { name: "correct", type: "text", placeholder: "Correct answer", maxLength: "25", required: true }),
-	        React.createElement("input", { name: "wrong1", type: "text", placeholder: "Wrong answer", maxLength: "25", required: true }),
-	        React.createElement("input", { name: "wrong2", type: "text", placeholder: "Wrong answer", maxLength: "25", required: true }),
-	        React.createElement("input", { name: "wrong3", type: "text", placeholder: "Wrong answer", maxLength: "25", required: true }),
-	        React.createElement("input", { type: "submit", value: "Submit" })
+	        'form',
+	        { action: '', onSubmit: props.submit, className: 'ComposeQuestion' },
+	        React.createElement(
+	            'label',
+	            { htmlFor: 'question' },
+	            'Question: '
+	        ),
+	        React.createElement('textarea', { name: 'question', placeholder: 'Type your question here...', minLength: '3', maxLength: '140', required: true }),
+	        React.createElement(
+	            'label',
+	            { htmlFor: 'correct' },
+	            'Correct: '
+	        ),
+	        React.createElement('input', { name: 'correct', type: 'text', placeholder: 'Correct answer', maxLength: '25', required: true }),
+	        React.createElement(
+	            'label',
+	            null,
+	            'Wrong Answers: '
+	        ),
+	        React.createElement('input', { name: 'wrong1', type: 'text', placeholder: 'Wrong answer', maxLength: '25', required: true }),
+	        React.createElement('input', { name: 'wrong2', type: 'text', placeholder: 'Wrong answer', maxLength: '25', required: true }),
+	        React.createElement('input', { name: 'wrong3', type: 'text', placeholder: 'Wrong answer', maxLength: '25', required: true }),
+	        React.createElement('input', { type: 'submit', value: 'Submit' })
 	    );
 	}
 	
@@ -22482,8 +22522,8 @@
 	        ),
 	        props.answers.map(function (answer, index) {
 	            return React.createElement(
-	                "button",
-	                { key: "answer" + index, onClick: props.submitAnswer },
+	                "div",
+	                { className: "Button", key: "answer" + index, onClick: props.submitAnswer },
 	                answer
 	            );
 	        })
@@ -22566,7 +22606,7 @@
 	            "div",
 	            { className: "NewQuizMenu" },
 	            React.createElement(
-	                "p",
+	                "h3",
 	                null,
 	                "Create New Quiz"
 	            ),
@@ -22630,7 +22670,7 @@
 	            "div",
 	            { className: "QuizList" },
 	            React.createElement(
-	                "p",
+	                "h4",
 	                null,
 	                "Public Quizzes"
 	            ),
@@ -22650,8 +22690,8 @@
 	                "none"
 	            ),
 	            React.createElement(
-	                "button",
-	                { onClick: this.props.refresh },
+	                "div",
+	                { className: "Button", onClick: this.props.refresh },
 	                "Refresh"
 	            )
 	        );
@@ -22665,6 +22705,504 @@
 	};
 	
 	module.exports = PublicQuizzes;
+
+/***/ },
+/* 183 */
+/*!************************!*\
+  !*** ./scss/site.scss ***!
+  \************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./site.scss */ 184);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./site.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./site.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 184 */
+/*!*******************************************************!*\
+  !*** ./~/css-loader!./~/sass-loader!./scss/site.scss ***!
+  \*******************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  font-size: 1rem;\n  color: rgba(0, 0, 0, 0.5); }\n\n.App {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch; }\n  .App > div {\n    padding: 1rem; }\n  .App .Options {\n    flex: 1;\n    background-color: #ADF7B6; }\n  .App .Main {\n    flex: 2;\n    background-color: #FFFC99; }\n  .App .UsersAndMessages {\n    flex: 1;\n    background-color: #79ADDC; }\n\n.Heavy {\n  font-weight: 500; }\n\n.Button {\n  margin: 0.5rem;\n  padding: 0.5rem;\n  text-align: center;\n  border-radius: 0.2rem;\n  background-color: rgba(0, 0, 0, 0.1); }\n  .Button:active {\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n\nform {\n  display: flex;\n  flex-direction: column; }\n  form label {\n    padding-top: 1rem; }\n  form input {\n    font-size: 1.2rem; }\n  form input[type=checkbox] {\n    margin: 1rem;\n    transform: scale(2.5); }\n\ninput[type=submit] {\n  width: 100%;\n  border: none;\n  height: 3rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  border-radius: 0.2rem; }\n  input[type=submit]:active {\n    border: none;\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n  input[type=submit]:focus {\n    outline: 0; }\n\n@media (min-width: 667px) {\n  .App {\n    flex-direction: row; }\n    .App > div {\n      padding-top: 10vh; } }\n\n@media (min-width: 1200px) {\n  .App .Options {\n    padding-left: 20vh; }\n  .App .UsersAndMessages {\n    padding-right: 20vh; } }\n", ""]);
+	
+	// exports
+
+
+/***/ },
+/* 185 */
+/*!**************************************!*\
+  !*** ./~/css-loader/lib/css-base.js ***!
+  \**************************************/
+/***/ function(module, exports) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	// css base code, injected by the css-loader
+	module.exports = function() {
+		var list = [];
+	
+		// return the list of modules as css string
+		list.toString = function toString() {
+			var result = [];
+			for(var i = 0; i < this.length; i++) {
+				var item = this[i];
+				if(item[2]) {
+					result.push("@media " + item[2] + "{" + item[1] + "}");
+				} else {
+					result.push(item[1]);
+				}
+			}
+			return result.join("");
+		};
+	
+		// import a list of modules into the list
+		list.i = function(modules, mediaQuery) {
+			if(typeof modules === "string")
+				modules = [[null, modules, ""]];
+			var alreadyImportedModules = {};
+			for(var i = 0; i < this.length; i++) {
+				var id = this[i][0];
+				if(typeof id === "number")
+					alreadyImportedModules[id] = true;
+			}
+			for(i = 0; i < modules.length; i++) {
+				var item = modules[i];
+				// skip already imported module
+				// this implementation is not 100% perfect for weird media query combinations
+				//  when a module is imported multiple times with different media queries.
+				//  I hope this will never occur (Hey this way we have smaller bundles)
+				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+					if(mediaQuery && !item[2]) {
+						item[2] = mediaQuery;
+					} else if(mediaQuery) {
+						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+					}
+					list.push(item);
+				}
+			}
+		};
+		return list;
+	};
+
+
+/***/ },
+/* 186 */
+/*!*************************************!*\
+  !*** ./~/style-loader/addStyles.js ***!
+  \*************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	/*
+		MIT License http://www.opensource.org/licenses/mit-license.php
+		Author Tobias Koppers @sokra
+	*/
+	var stylesInDom = {},
+		memoize = function(fn) {
+			var memo;
+			return function () {
+				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
+				return memo;
+			};
+		},
+		isOldIE = memoize(function() {
+			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
+		}),
+		getHeadElement = memoize(function () {
+			return document.head || document.getElementsByTagName("head")[0];
+		}),
+		singletonElement = null,
+		singletonCounter = 0,
+		styleElementsInsertedAtTop = [];
+	
+	module.exports = function(list, options) {
+		if(true) {
+			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
+		}
+	
+		options = options || {};
+		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+		// tags it will allow on a page
+		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
+	
+		// By default, add <style> tags to the bottom of <head>.
+		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
+	
+		var styles = listToStyles(list);
+		addStylesToDom(styles, options);
+	
+		return function update(newList) {
+			var mayRemove = [];
+			for(var i = 0; i < styles.length; i++) {
+				var item = styles[i];
+				var domStyle = stylesInDom[item.id];
+				domStyle.refs--;
+				mayRemove.push(domStyle);
+			}
+			if(newList) {
+				var newStyles = listToStyles(newList);
+				addStylesToDom(newStyles, options);
+			}
+			for(var i = 0; i < mayRemove.length; i++) {
+				var domStyle = mayRemove[i];
+				if(domStyle.refs === 0) {
+					for(var j = 0; j < domStyle.parts.length; j++)
+						domStyle.parts[j]();
+					delete stylesInDom[domStyle.id];
+				}
+			}
+		};
+	}
+	
+	function addStylesToDom(styles, options) {
+		for(var i = 0; i < styles.length; i++) {
+			var item = styles[i];
+			var domStyle = stylesInDom[item.id];
+			if(domStyle) {
+				domStyle.refs++;
+				for(var j = 0; j < domStyle.parts.length; j++) {
+					domStyle.parts[j](item.parts[j]);
+				}
+				for(; j < item.parts.length; j++) {
+					domStyle.parts.push(addStyle(item.parts[j], options));
+				}
+			} else {
+				var parts = [];
+				for(var j = 0; j < item.parts.length; j++) {
+					parts.push(addStyle(item.parts[j], options));
+				}
+				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
+			}
+		}
+	}
+	
+	function listToStyles(list) {
+		var styles = [];
+		var newStyles = {};
+		for(var i = 0; i < list.length; i++) {
+			var item = list[i];
+			var id = item[0];
+			var css = item[1];
+			var media = item[2];
+			var sourceMap = item[3];
+			var part = {css: css, media: media, sourceMap: sourceMap};
+			if(!newStyles[id])
+				styles.push(newStyles[id] = {id: id, parts: [part]});
+			else
+				newStyles[id].parts.push(part);
+		}
+		return styles;
+	}
+	
+	function insertStyleElement(options, styleElement) {
+		var head = getHeadElement();
+		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
+		if (options.insertAt === "top") {
+			if(!lastStyleElementInsertedAtTop) {
+				head.insertBefore(styleElement, head.firstChild);
+			} else if(lastStyleElementInsertedAtTop.nextSibling) {
+				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
+			} else {
+				head.appendChild(styleElement);
+			}
+			styleElementsInsertedAtTop.push(styleElement);
+		} else if (options.insertAt === "bottom") {
+			head.appendChild(styleElement);
+		} else {
+			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
+		}
+	}
+	
+	function removeStyleElement(styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
+		if(idx >= 0) {
+			styleElementsInsertedAtTop.splice(idx, 1);
+		}
+	}
+	
+	function createStyleElement(options) {
+		var styleElement = document.createElement("style");
+		styleElement.type = "text/css";
+		insertStyleElement(options, styleElement);
+		return styleElement;
+	}
+	
+	function createLinkElement(options) {
+		var linkElement = document.createElement("link");
+		linkElement.rel = "stylesheet";
+		insertStyleElement(options, linkElement);
+		return linkElement;
+	}
+	
+	function addStyle(obj, options) {
+		var styleElement, update, remove;
+	
+		if (options.singleton) {
+			var styleIndex = singletonCounter++;
+			styleElement = singletonElement || (singletonElement = createStyleElement(options));
+			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
+			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
+		} else if(obj.sourceMap &&
+			typeof URL === "function" &&
+			typeof URL.createObjectURL === "function" &&
+			typeof URL.revokeObjectURL === "function" &&
+			typeof Blob === "function" &&
+			typeof btoa === "function") {
+			styleElement = createLinkElement(options);
+			update = updateLink.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+				if(styleElement.href)
+					URL.revokeObjectURL(styleElement.href);
+			};
+		} else {
+			styleElement = createStyleElement(options);
+			update = applyToTag.bind(null, styleElement);
+			remove = function() {
+				removeStyleElement(styleElement);
+			};
+		}
+	
+		update(obj);
+	
+		return function updateStyle(newObj) {
+			if(newObj) {
+				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
+					return;
+				update(obj = newObj);
+			} else {
+				remove();
+			}
+		};
+	}
+	
+	var replaceText = (function () {
+		var textStore = [];
+	
+		return function (index, replacement) {
+			textStore[index] = replacement;
+			return textStore.filter(Boolean).join('\n');
+		};
+	})();
+	
+	function applyToSingletonTag(styleElement, index, remove, obj) {
+		var css = remove ? "" : obj.css;
+	
+		if (styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = replaceText(index, css);
+		} else {
+			var cssNode = document.createTextNode(css);
+			var childNodes = styleElement.childNodes;
+			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
+			if (childNodes.length) {
+				styleElement.insertBefore(cssNode, childNodes[index]);
+			} else {
+				styleElement.appendChild(cssNode);
+			}
+		}
+	}
+	
+	function applyToTag(styleElement, obj) {
+		var css = obj.css;
+		var media = obj.media;
+	
+		if(media) {
+			styleElement.setAttribute("media", media)
+		}
+	
+		if(styleElement.styleSheet) {
+			styleElement.styleSheet.cssText = css;
+		} else {
+			while(styleElement.firstChild) {
+				styleElement.removeChild(styleElement.firstChild);
+			}
+			styleElement.appendChild(document.createTextNode(css));
+		}
+	}
+	
+	function updateLink(linkElement, obj) {
+		var css = obj.css;
+		var sourceMap = obj.sourceMap;
+	
+		if(sourceMap) {
+			// http://stackoverflow.com/a/26603875
+			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
+		}
+	
+		var blob = new Blob([css], { type: "text/css" });
+	
+		var oldSrc = linkElement.href;
+	
+		linkElement.href = URL.createObjectURL(blob);
+	
+		if(oldSrc)
+			URL.revokeObjectURL(oldSrc);
+	}
+
+
+/***/ },
+/* 187 */
+/*!***********************************!*\
+  !*** ./scss/ComposeQuestion.scss ***!
+  \***********************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./ComposeQuestion.scss */ 188);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./ComposeQuestion.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./ComposeQuestion.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 188 */
+/*!******************************************************************!*\
+  !*** ./~/css-loader!./~/sass-loader!./scss/ComposeQuestion.scss ***!
+  \******************************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "", ""]);
+	
+	// exports
+
+
+/***/ },
+/* 189 */
+/*!****************************!*\
+  !*** ./scss/UserList.scss ***!
+  \****************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./UserList.scss */ 190);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./UserList.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./UserList.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 190 */
+/*!***********************************************************!*\
+  !*** ./~/css-loader!./~/sass-loader!./scss/UserList.scss ***!
+  \***********************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, ".UserList {\n  width: 80%; }\n  .UserList > ul {\n    width: 100%; }\n    .UserList > ul > li {\n      display: flex;\n      justify-content: space-between;\n      align-items: flex-start; }\n", ""]);
+	
+	// exports
+
+
+/***/ },
+/* 191 */
+/*!*******************************!*\
+  !*** ./scss/MessageList.scss ***!
+  \*******************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./MessageList.scss */ 192);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./MessageList.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./MessageList.scss");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 192 */
+/*!**************************************************************!*\
+  !*** ./~/css-loader!./~/sass-loader!./scss/MessageList.scss ***!
+  \**************************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, ".MessageList {\n  overflow-y: scroll;\n  overflow-x: hidden;\n  height: 20rem;\n  list-style: circle; }\n  .MessageList > li {\n    margin: 0.2rem; }\n    .MessageList > li:nth-child(even) {\n      font-weight: 300; }\n", ""]);
+	
+	// exports
+
 
 /***/ }
 /******/ ]);

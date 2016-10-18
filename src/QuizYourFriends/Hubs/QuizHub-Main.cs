@@ -21,6 +21,9 @@ namespace QuizYourFriends.Hubs
             if (name == "" || name == null)
             {
                 name = "Anon";
+            } else if (name.Length > 24)
+            {
+                name = name.Substring(0, 24);
             }
 
             bool unique = false;

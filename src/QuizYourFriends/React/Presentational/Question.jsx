@@ -5,9 +5,9 @@ function Question(props) {
         <div>
             <p>{props.question}</p>
             {props.answers.map((answer, index) =>
-                <button key={"answer"+index} onClick={props.submitAnswer}>
+                <div className="Button" key={"answer"+index} onClick={props.submitAnswer}>
                     {answer}
-                </button>
+                </div>
             )}
         </div>
     );

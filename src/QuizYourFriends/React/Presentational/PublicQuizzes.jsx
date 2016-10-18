@@ -7,7 +7,7 @@ var PublicQuizzes = React.createClass({
     render: function () {
         return (
         <div className="QuizList">
-            <p>Public Quizzes</p>
+            <h4>Public Quizzes</h4>
             {
             this.props.quizzes != null ?
             <ul>
@@ -18,7 +18,7 @@ var PublicQuizzes = React.createClass({
             :
             <p>none</p>
             }
-            <button onClick={this.props.refresh}>Refresh</button>
+            <div className="Button" onClick={this.props.refresh}>Refresh</div>
         </div>
       );
     }
