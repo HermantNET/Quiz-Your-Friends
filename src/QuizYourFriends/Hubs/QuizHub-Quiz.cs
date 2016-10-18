@@ -10,17 +10,13 @@ namespace QuizYourFriends.Hubs
     public partial class QuizHub : Hub
     {
 
-        public void CreateQuiz(bool priv, string name, string max)
+        public async Task CreateQuiz(bool priv, string name, string max)
         {
             string trimmedName = name == null ? "" : name.Trim();
             if (Quizzes.FirstOrDefault(quiz => quiz.Name == trimmedName) == null)
             {
                 int maxPlayers;
-                if (trimmedName == "")
-                {
-                    Clients.Caller.message("Room creation failed: Name must be at least 1 character");
-                }
-                else if (trimmedName == "none")
+                if (trimmedName == "none")
                 {
                     Clients.Caller.message("Can not make room with name of 'none'");
                 }
@@ -34,6 +30,13 @@ namespace QuizYourFriends.Hubs
                 }
                 else
                 {
+                    var player = GetCurrentPlayer();
+
+                    if (trimmedName == "")
+                    {
+                        trimmedName = player.Name + "'s room";
+                    }
+
                     if (IsInRoom())
                     {
                         LeaveQuiz();
@@ -44,8 +47,8 @@ namespace QuizYourFriends.Hubs
                         maxPlayers = 20;
                     }
 
-                    Groups.Add(Context.ConnectionId, trimmedName);
-                    Quizzes.Add(new Quiz(priv, trimmedName, maxPlayers, GetCurrentPlayer()));
+                    await Groups.Add(Context.ConnectionId, trimmedName);
+                    Quizzes.Add(new Quiz(priv, trimmedName, maxPlayers, player));
                     Clients.Caller.message("Room '" + trimmedName + "' created");
                     Clients.Caller.inRoom(true, name, maxPlayers);
                     PlayersInLobby(GetCurrentQuiz());

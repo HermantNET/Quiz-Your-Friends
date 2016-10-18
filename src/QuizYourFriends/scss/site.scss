@@ -1,19 +1,56 @@
 ﻿body {
+    margin: 0;
     font-family: 'Roboto', sans-serif;
-    color: black;
-}
-
-#app {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-content:center;
+    font-size: 1rem;
+    color: rgba(0,0,0,0.5);
 }
 
 .App {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 
-    .Title {
-        width: 100%;
-        background-color: Highlight;
+    & > div {
+        padding: 0.5rem 1rem;
     }
+
+    .Options {
+        flex: 1;
+        background-color: #ADF7B6;
+    }
+
+    .Main {
+        flex: 2;
+        background-color: #FFFC99;
+    }
+
+    .UsersAndMessages {
+        flex: 1;
+        background-color: #79ADDC;
+    }
+}
+
+.UserList {
+    width: 80%;
+    & > ul {
+        width: 100%;
+
+        & > li {
+            display: flex;
+            justify-content: space-between;
+            align-items:flex-start;
+
+            &  > span {
+            
+            }
+        }
+    }
+}
+
+.MessageList {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    max-height: 50%;
 }

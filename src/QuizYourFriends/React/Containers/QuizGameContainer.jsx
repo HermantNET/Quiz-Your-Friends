@@ -40,6 +40,7 @@ var QuizGameContainer = React.createClass({
             this.setState({
                 connected: true
             });
+            this.getPublicQuizzes();
         }.bind(this));
     },
     componentDidMount: function () {
@@ -126,7 +127,6 @@ var QuizGameContainer = React.createClass({
             })
         }.bind(this);
         // End Client side response code for SignalR
-
     },
 
     // SignalR call server code
@@ -190,10 +190,7 @@ var QuizGameContainer = React.createClass({
             view = <p>Connecting...</p>;
         }
         else if (!this.state.inRoom) {
-            view = (<div>
-                        <p>Create or join a room to play</p>
-                        <PublicQuizzes quizzes={this.state.publicQuizzes} joinQuiz={this.joinQuiz} refresh={this.getPublicQuizzes} />
-                    </div>);
+            view = <p>Create or join a room to play</p>;
         }
         else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
             view = <QuizRoom ready={this.state.readyCount} playerCount={this.state.players == [] ? 1 : this.state.players.length } />;
@@ -215,17 +212,25 @@ var QuizGameContainer = React.createClass({
 
         return (
             <div className="App">
-                <h2 className="Title">Quiz your Friends</h2>
-                <p className="ConnectedAs">Connected as: {this.state.name}</p>
-                <p className="RoomState">{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
-                <QuizMenu createNewQuiz={this.createNewQuiz}
-                          joinQuiz={() => this.joinQuiz(null)}
-                          leaveQuiz={this.leaveQuiz}
-                          readyUp={this.readyUp} />
-                {this.state.createQuiz ? <NewQuizMenu createQuiz={this.createQuiz} name={this.state.name } /> : ''}
-                {view}
-                {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers } /> : ''}
-                <MessageList messages={this.state.messages} />
+                <div className="Options">
+                    <h2 className="Title">Quiz your Friends</h2>
+                    <p className="ConnectedAs">Connected as: {this.state.name}</p>
+                    <p className="RoomState">{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
+                    <QuizMenu createNewQuiz={this.createNewQuiz}
+                              joinQuiz={() => this.joinQuiz(null)}
+                              leaveQuiz={this.leaveQuiz}
+                              readyUp={this.readyUp} />
+                </div>
+                <div className="Main">
+                    {this.state.createQuiz ? <NewQuizMenu createQuiz={this.createQuiz} name={this.state.name } /> : ''}
+                    {view}
+                    {this.state.inRoom ? '' : <PublicQuizzes quizzes={this.state.publicQuizzes} joinQuiz={this.joinQuiz} refresh={this.getPublicQuizzes} /> }
+                </div>
+                <div className="UsersAndMessages">
+                    {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers } /> : ''}
+                    <p>Messages</p>
+                    <MessageList messages={this.state.messages} />
+                </div>
             </div>
         );
     }

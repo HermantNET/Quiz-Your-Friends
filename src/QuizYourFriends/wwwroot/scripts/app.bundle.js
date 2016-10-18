@@ -21990,6 +21990,7 @@
 	            this.setState({
 	                connected: true
 	            });
+	            this.getPublicQuizzes();
 	        }.bind(this));
 	    },
 	    componentDidMount: function componentDidMount() {
@@ -22147,14 +22148,9 @@
 	            );
 	        } else if (!this.state.inRoom) {
 	            view = React.createElement(
-	                'div',
+	                'p',
 	                null,
-	                React.createElement(
-	                    'p',
-	                    null,
-	                    'Create or join a room to play'
-	                ),
-	                React.createElement(PublicQuizzes, { quizzes: this.state.publicQuizzes, joinQuiz: this.joinQuiz, refresh: this.getPublicQuizzes })
+	                'Create or join a room to play'
 	            );
 	        } else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(QuizRoom, { ready: this.state.readyCount, playerCount: this.state.players == [] ? 1 : this.state.players.length });
@@ -22178,31 +22174,49 @@
 	            'div',
 	            { className: 'App' },
 	            React.createElement(
-	                'h2',
-	                { className: 'Title' },
-	                'Quiz your Friends'
+	                'div',
+	                { className: 'Options' },
+	                React.createElement(
+	                    'h2',
+	                    { className: 'Title' },
+	                    'Quiz your Friends'
+	                ),
+	                React.createElement(
+	                    'p',
+	                    { className: 'ConnectedAs' },
+	                    'Connected as: ',
+	                    this.state.name
+	                ),
+	                React.createElement(
+	                    'p',
+	                    { className: 'RoomState' },
+	                    this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room
+	                ),
+	                React.createElement(QuizMenu, { createNewQuiz: this.createNewQuiz,
+	                    joinQuiz: function joinQuiz() {
+	                        return _this.joinQuiz(null);
+	                    },
+	                    leaveQuiz: this.leaveQuiz,
+	                    readyUp: this.readyUp })
 	            ),
 	            React.createElement(
-	                'p',
-	                { className: 'ConnectedAs' },
-	                'Connected as: ',
-	                this.state.name
+	                'div',
+	                { className: 'Main' },
+	                this.state.createQuiz ? React.createElement(NewQuizMenu, { createQuiz: this.createQuiz, name: this.state.name }) : '',
+	                view,
+	                this.state.inRoom ? '' : React.createElement(PublicQuizzes, { quizzes: this.state.publicQuizzes, joinQuiz: this.joinQuiz, refresh: this.getPublicQuizzes })
 	            ),
 	            React.createElement(
-	                'p',
-	                { className: 'RoomState' },
-	                this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room
-	            ),
-	            React.createElement(QuizMenu, { createNewQuiz: this.createNewQuiz,
-	                joinQuiz: function joinQuiz() {
-	                    return _this.joinQuiz(null);
-	                },
-	                leaveQuiz: this.leaveQuiz,
-	                readyUp: this.readyUp }),
-	            this.state.createQuiz ? React.createElement(NewQuizMenu, { createQuiz: this.createQuiz, name: this.state.name }) : '',
-	            view,
-	            this.state.inRoom ? React.createElement(UserList, { players: this.state.players, max: this.state.maxPlayers }) : '',
-	            React.createElement(MessageList, { messages: this.state.messages })
+	                'div',
+	                { className: 'UsersAndMessages' },
+	                this.state.inRoom ? React.createElement(UserList, { players: this.state.players, max: this.state.maxPlayers }) : '',
+	                React.createElement(
+	                    'p',
+	                    null,
+	                    'Messages'
+	                ),
+	                React.createElement(MessageList, { messages: this.state.messages })
+	            )
 	        );
 	    }
 	});
@@ -22341,20 +22355,29 @@
 	'use strict';
 	
 	var React = __webpack_require__(/*! react */ 1);
+	var ReactDOM = __webpack_require__(/*! react-dom */ 34);
 	
-	function MessageList(props) {
-	    return React.createElement(
-	        'ul',
-	        null,
-	        props.messages.map(function (msg, index) {
-	            return React.createElement(
-	                'li',
-	                { key: 'msg' + index },
-	                msg
-	            );
-	        })
-	    );
-	}
+	var MessageList = React.createClass({
+	    displayName: 'MessageList',
+	
+	    componentDidUpdate: function componentDidUpdate() {
+	        var node = ReactDOM.findDOMNode(this);
+	        node.scrollTop = node.scrollHeight;
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            'ul',
+	            { className: 'MessageList' },
+	            this.props.messages.map(function (msg, index) {
+	                return React.createElement(
+	                    'li',
+	                    { key: 'msg' + index },
+	                    msg
+	                );
+	            })
+	        );
+	    }
+	});
 	
 	module.exports = MessageList;
 
@@ -22388,8 +22411,11 @@
 	                return React.createElement(
 	                    'li',
 	                    { key: 'player' + index },
-	                    player.Name,
-	                    ' ',
+	                    React.createElement(
+	                        'span',
+	                        null,
+	                        player.Name
+	                    ),
 	                    React.createElement(
 	                        'span',
 	                        null,
