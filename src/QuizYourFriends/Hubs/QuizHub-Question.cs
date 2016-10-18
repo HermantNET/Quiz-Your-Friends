@@ -77,7 +77,7 @@ namespace QuizYourFriends.Hubs
             else
             {
                 question.AnsweredBy.Add(Context.ConnectionId);
-                if (answer == quiz.Questions.ElementAt(quiz.CurrentQuestion).CorrectAnswer)
+                if (answer == question.CorrectAnswer)
                 {
                     player.Score += 50;
                     PlayersInLobby(quiz);
@@ -86,6 +86,7 @@ namespace QuizYourFriends.Hubs
                 else
                 {
                     MessageGroup(player.Name + " was wrong", quiz.Name);
+                    Clients.Caller.message("The correct answer was '{0}'", question.CorrectAnswer);
                 }
             }
 
