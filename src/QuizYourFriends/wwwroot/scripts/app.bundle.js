@@ -21956,6 +21956,7 @@
 	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 179);
 	var QuizEnd = __webpack_require__(/*! .././Presentational/QuizEnd.jsx */ 180);
 	var NewQuizMenu = __webpack_require__(/*! .././Presentational/NewQuizMenu.jsx */ 181);
+	var PublicQuizzes = __webpack_require__(/*! .././Presentational/PublicQuizzes.jsx */ 182);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -21964,6 +21965,7 @@
 	        return {
 	            hub: $.connection.quizHub,
 	            connected: false,
+	            publicQuizzes: null,
 	            createQuiz: false,
 	            getQuestions: false,
 	            started: false,
@@ -22002,6 +22004,12 @@
 	        this.state.hub.client.message = function (msg) {
 	            this.setState({
 	                messages: this.state.messages.concat(msg)
+	            });
+	        }.bind(this);
+	
+	        this.state.hub.client.getPublicQuizzes = function (quizzes) {
+	            this.setState({
+	                publicQuizzes: quizzes
 	            });
 	        }.bind(this);
 	
@@ -22071,14 +22079,20 @@
 	    },
 	
 	    // SignalR call server code
+	    getPublicQuizzes: function getPublicQuizzes() {
+	        ServerRoutes.getPublicQuizzes(this.state.hub);
+	    },
 	    createQuiz: function createQuiz(quiz) {
 	        ServerRoutes.CreateQuiz(this.state.hub, quiz);
 	        this.setState({
 	            createQuiz: false
 	        });
 	    },
-	    joinQuiz: function joinQuiz() {
-	        ServerRoutes.JoinQuiz(this.state.hub);
+	    joinQuiz: function joinQuiz(quizName) {
+	        if (quizName == null) {
+	            quizName = prompt("Quiz name: ");
+	        }
+	        ServerRoutes.JoinQuiz(this.state.hub, quizName);
 	    },
 	    leaveQuiz: function leaveQuiz() {
 	        ServerRoutes.LeaveQuiz(this.state.hub);
@@ -22122,6 +22136,8 @@
 	    },
 	
 	    render: function render() {
+	        var _this = this;
+	
 	        var view;
 	        if (!this.state.connected) {
 	            view = React.createElement(
@@ -22131,9 +22147,14 @@
 	            );
 	        } else if (!this.state.inRoom) {
 	            view = React.createElement(
-	                'p',
+	                'div',
 	                null,
-	                'Create or join a room to play'
+	                React.createElement(
+	                    'p',
+	                    null,
+	                    'Create or join a room to play'
+	                ),
+	                React.createElement(PublicQuizzes, { quizzes: this.state.publicQuizzes, joinQuiz: this.joinQuiz, refresh: this.getPublicQuizzes })
 	            );
 	        } else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
 	            view = React.createElement(QuizRoom, { ready: this.state.readyCount, playerCount: this.state.players == [] ? 1 : this.state.players.length });
@@ -22173,7 +22194,9 @@
 	                this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room
 	            ),
 	            React.createElement(QuizMenu, { createNewQuiz: this.createNewQuiz,
-	                joinQuiz: this.joinQuiz,
+	                joinQuiz: function joinQuiz() {
+	                    return _this.joinQuiz(null);
+	                },
 	                leaveQuiz: this.leaveQuiz,
 	                readyUp: this.readyUp }),
 	            this.state.createQuiz ? React.createElement(NewQuizMenu, { createQuiz: this.createQuiz, name: this.state.name }) : '',
@@ -22274,12 +22297,16 @@
 	'use strict';
 	
 	module.exports = {
+	    getPublicQuizzes: function getPublicQuizzes(hub) {
+	        hub.invoke('GetPublicQuizzes');
+	    },
+	
 	    CreateQuiz: function CreateQuiz(hub, quiz) {
 	        hub.invoke('CreateQuiz', quiz.isPrivate.checked, quiz.quizRoomName.value, quiz.maxPlayers.value);
 	    },
 	
-	    JoinQuiz: function JoinQuiz(hub) {
-	        hub.invoke('JoinQuiz', prompt("Room name: "));
+	    JoinQuiz: function JoinQuiz(hub, quizName) {
+	        hub.invoke('JoinQuiz', quizName);
 	    },
 	
 	    ReadyUp: function ReadyUp(hub) {
@@ -22552,6 +22579,66 @@
 	});
 	
 	module.exports = NewQuizMenu;
+
+/***/ },
+/* 182 */
+/*!************************************************!*\
+  !*** ./React/Presentational/PublicQuizzes.jsx ***!
+  \************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	var PublicQuizzes = React.createClass({
+	    displayName: "PublicQuizzes",
+	
+	    joinQuiz: function joinQuiz(e) {
+	        this.props.joinQuiz(e.target.textContent);
+	    },
+	    render: function render() {
+	        var _this = this;
+	
+	        return React.createElement(
+	            "div",
+	            { className: "QuizList" },
+	            React.createElement(
+	                "p",
+	                null,
+	                "Public Quizzes"
+	            ),
+	            this.props.quizzes != null ? React.createElement(
+	                "ul",
+	                null,
+	                this.props.quizzes.map(function (quiz, index) {
+	                    return React.createElement(
+	                        "li",
+	                        { onClick: _this.joinQuiz, key: quiz + index },
+	                        quiz
+	                    );
+	                })
+	            ) : React.createElement(
+	                "p",
+	                null,
+	                "none"
+	            ),
+	            React.createElement(
+	                "button",
+	                { onClick: this.props.refresh },
+	                "Refresh"
+	            )
+	        );
+	    }
+	});
+	
+	PublicQuizzes.propTypes = {
+	    quizzes: React.PropTypes.arrayOf(React.PropTypes.string),
+	    joinQuiz: React.PropTypes.func,
+	    refresh: React.PropTypes.func
+	};
+	
+	module.exports = PublicQuizzes;
 
 /***/ }
 /******/ ]);

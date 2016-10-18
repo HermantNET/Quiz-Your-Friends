@@ -8,12 +8,14 @@ var ComposeQuestion = require('.././Presentational/ComposeQuestion.jsx');
 var Question = require('.././Presentational/Question.jsx');
 var QuizEnd = require('.././Presentational/QuizEnd.jsx');
 var NewQuizMenu = require('.././Presentational/NewQuizMenu.jsx');
+var PublicQuizzes = require('.././Presentational/PublicQuizzes.jsx');
 
 var QuizGameContainer = React.createClass({
     getInitialState: function () {
         return {
             hub: $.connection.quizHub,
             connected: false,
+            publicQuizzes: null,
             createQuiz: false,
             getQuestions: false,
             started: false,
@@ -52,6 +54,12 @@ var QuizGameContainer = React.createClass({
         this.state.hub.client.message = function (msg) {
             this.setState({
                 messages: this.state.messages.concat(msg)
+            });
+        }.bind(this);
+
+        this.state.hub.client.getPublicQuizzes = function (quizzes) {
+            this.setState({
+                publicQuizzes: quizzes
             });
         }.bind(this);
 
@@ -122,14 +130,20 @@ var QuizGameContainer = React.createClass({
     },
 
     // SignalR call server code
+    getPublicQuizzes: function () {
+        ServerRoutes.getPublicQuizzes(this.state.hub);
+    },
     createQuiz: function (quiz) {
         ServerRoutes.CreateQuiz(this.state.hub, quiz);
         this.setState({
             createQuiz: false
         });
     },
-    joinQuiz: function () {
-        ServerRoutes.JoinQuiz(this.state.hub);
+    joinQuiz: function (quizName) {
+        if (quizName == null) {
+            quizName = prompt("Quiz name: ");
+        }
+        ServerRoutes.JoinQuiz(this.state.hub, quizName);
     },
     leaveQuiz: function () {
         ServerRoutes.LeaveQuiz(this.state.hub);
@@ -176,7 +190,10 @@ var QuizGameContainer = React.createClass({
             view = <p>Connecting...</p>;
         }
         else if (!this.state.inRoom) {
-            view = <p>Create or join a room to play</p>;
+            view = (<div>
+                        <p>Create or join a room to play</p>
+                        <PublicQuizzes quizzes={this.state.publicQuizzes} joinQuiz={this.joinQuiz} refresh={this.getPublicQuizzes} />
+                    </div>);
         }
         else if (this.state.inRoom && !this.state.getQuestions && !this.state.started) {
             view = <QuizRoom ready={this.state.readyCount} playerCount={this.state.players == [] ? 1 : this.state.players.length } />;
@@ -202,7 +219,7 @@ var QuizGameContainer = React.createClass({
                 <p className="ConnectedAs">Connected as: {this.state.name}</p>
                 <p className="RoomState">{this.state.room == 'none' ? "Not in a room" : "Currently in room: " + this.state.room}</p>
                 <QuizMenu createNewQuiz={this.createNewQuiz}
-                          joinQuiz={this.joinQuiz}
+                          joinQuiz={() => this.joinQuiz(null)}
                           leaveQuiz={this.leaveQuiz}
                           readyUp={this.readyUp} />
                 {this.state.createQuiz ? <NewQuizMenu createQuiz={this.createQuiz} name={this.state.name } /> : ''}

@@ -44,6 +44,13 @@ namespace QuizYourFriends.Hubs
             return base.OnConnected();
         }
 
+        public void GetPublicQuizzes()
+        {
+            var quizzes = Quizzes.Where(q => q.PrivateLobby == false).Select(q => q.Name).ToArray();
+            if (quizzes.Length == 0) quizzes = null;
+            Clients.Caller.getPublicQuizzes(quizzes);
+        }
+
         // On Disconnect, remove player from ConnectedPlayers List
         public override Task OnDisconnected(bool stopCalled)
         {

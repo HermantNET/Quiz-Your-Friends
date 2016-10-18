@@ -1,10 +1,14 @@
 ﻿module.exports = {
+    getPublicQuizzes: function (hub) {
+        hub.invoke('GetPublicQuizzes');
+    },
+
     CreateQuiz: function (hub, quiz) {
         hub.invoke('CreateQuiz', quiz.isPrivate.checked, quiz.quizRoomName.value, quiz.maxPlayers.value);
     },
 
-    JoinQuiz: function (hub) {
-        hub.invoke('JoinQuiz', prompt("Room name: "));
+    JoinQuiz: function (hub, quizName) {
+        hub.invoke('JoinQuiz', quizName);
     },
 
     ReadyUp: function (hub) {
