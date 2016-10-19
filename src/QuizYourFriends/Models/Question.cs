@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace QuizYourFriends.Models
@@ -29,6 +30,18 @@ namespace QuizYourFriends.Models
 
         public Question(string conId, string question, string correct, string[] wrong)
         {
+            if (question.Length > 140)
+            {
+                question = question.Substring(0, 140);
+            }
+
+            if (correct.Length > 140)
+            {
+                correct = correct.Substring(0, 35);
+            }
+
+            Array.ForEach(wrong, (w) => { if (w.Length > 140) w = w.Substring(0, 35); });
+
             QuestionBy = conId;
             Statement = question;
             CorrectAnswer = correct;

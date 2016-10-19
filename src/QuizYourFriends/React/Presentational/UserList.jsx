@@ -7,7 +7,7 @@ function UserList(props) {
             <p>Players in lobby: <span className="Heavy">{props.players.length}/{props.max}</span></p>
             <ul>
                 {props.players.map((player, index) => {
-                    return <li key={'player'+index}><span>{player.Name}</span><span>{player.Score}</span></li>
+                    return <li key={'player'+index}><span className="PlayerName">{player.Name}</span><span className="PlayerScore">{player.Score}</span></li>
                 })}
             </ul>
         </div> 

@@ -44,5 +44,11 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz();
             Clients.Group(quiz.Name).playersReady(quiz.Players.Where(p => p.Ready).Count());
         }
+
+        public void PlayersReadyCaller()
+        {
+            var quiz = GetCurrentQuiz();
+            Clients.Caller.playersReady(quiz.Players.Where(p => p.Ready).Count());
+        }
     }
 }

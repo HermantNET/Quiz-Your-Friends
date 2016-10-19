@@ -1,14 +1,18 @@
 ﻿.MessageList {
     overflow-y: scroll;
     overflow-x: hidden;
-    height: 20rem;
-    list-style: circle;
+    width: 90%;
 
-    & > li {
-        margin: 0.2rem;
+    & > ul {
+        width: 75%;
+        list-style: circle;
 
-        &:nth-child(even) {
-            font-weight: 300;
+        & > li {
+            margin: 0.2rem;
+
+            &:nth-child(even) {
+                font-weight: 300;
+            }
         }
     }
 }

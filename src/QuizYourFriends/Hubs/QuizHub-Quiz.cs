@@ -36,6 +36,10 @@ namespace QuizYourFriends.Hubs
                     {
                         trimmedName = player.Name + "'s room";
                     }
+                    else if (trimmedName.Length > 35)
+                    {
+                        trimmedName = trimmedName.Substring(0, 35);
+                    }
 
                     if (IsInRoom())
                     {
@@ -82,6 +86,7 @@ namespace QuizYourFriends.Hubs
                     await Groups.Add(Context.ConnectionId, name);
                     quiz.Players.Add(player);
                     Clients.Caller.inRoom(true, name, quiz.MaxPlayers);
+                    PlayersReadyCaller();
                     MessageGroup(player.Name + " joined the room");
                     PlayersInLobby(quiz);
                 }

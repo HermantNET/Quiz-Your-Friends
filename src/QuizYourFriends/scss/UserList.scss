@@ -1,16 +1,15 @@
 ﻿.UserList {
-    width: 80%;
+    width: 90%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
     & > ul {
-        width: 100%;
+        width: 75%;
 
         & > li {
             display: flex;
             justify-content: space-between;
             align-items:flex-start;
-
-            &  > span {
-            
-            }
         }
     }
 }

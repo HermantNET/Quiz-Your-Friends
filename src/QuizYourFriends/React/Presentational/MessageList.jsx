@@ -9,11 +9,14 @@ var MessageList = React.createClass({
     },
     render: function () {
         return (
-            <ul className="MessageList">
-                {this.props.messages.map((msg, index) => {
+            <div className="MessageList">
+                <ul>
+                    {this.props.messages.map((msg, index) => {
                     return <li key={'msg' + index }>{msg}</li>
-                })}
-            </ul>
+                    })}
+                </ul>
+            </div>
+            
         );
     }
 })

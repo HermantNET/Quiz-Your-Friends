@@ -53,7 +53,7 @@
 	var ReactDOM = __webpack_require__(/*! react-dom */ 34);
 	var QuizGameContainer = __webpack_require__(/*! ./Containers/QuizGameContainer.jsx */ 172);
 	// Node-Sass doesn't work at school development machine.
-	var css = __webpack_require__(/*! ../scss/site.scss */ 183);
+	var css = __webpack_require__(/*! ../scss/site.scss */ 191);
 	
 	ReactDOM.render(React.createElement(QuizGameContainer, null), document.getElementById('app'));
 
@@ -21951,12 +21951,12 @@
 	var QuizRoom = __webpack_require__(/*! .././Presentational/QuizRoom.jsx */ 174);
 	var ServerRoutes = __webpack_require__(/*! ../SignalR-ServerRoutes.js */ 175);
 	var MessageList = __webpack_require__(/*! .././Presentational/MessageList.jsx */ 176);
-	var UserList = __webpack_require__(/*! .././Presentational/UserList.jsx */ 177);
-	var ComposeQuestion = __webpack_require__(/*! .././Presentational/ComposeQuestion.jsx */ 178);
-	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 179);
-	var QuizEnd = __webpack_require__(/*! .././Presentational/QuizEnd.jsx */ 180);
-	var NewQuizMenu = __webpack_require__(/*! .././Presentational/NewQuizMenu.jsx */ 181);
-	var PublicQuizzes = __webpack_require__(/*! .././Presentational/PublicQuizzes.jsx */ 182);
+	var UserList = __webpack_require__(/*! .././Presentational/UserList.jsx */ 181);
+	var ComposeQuestion = __webpack_require__(/*! .././Presentational/ComposeQuestion.jsx */ 184);
+	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 187);
+	var QuizEnd = __webpack_require__(/*! .././Presentational/QuizEnd.jsx */ 188);
+	var NewQuizMenu = __webpack_require__(/*! .././Presentational/NewQuizMenu.jsx */ 189);
+	var PublicQuizzes = __webpack_require__(/*! .././Presentational/PublicQuizzes.jsx */ 190);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -22299,9 +22299,13 @@
 	            "p",
 	            null,
 	            "Players ready: ",
-	            props.ready,
-	            "/",
-	            props.playerCount
+	            React.createElement(
+	                "span",
+	                { className: "Heavy" },
+	                props.ready,
+	                "/",
+	                props.playerCount
+	            )
 	        ),
 	        React.createElement(
 	            "p",
@@ -22374,7 +22378,7 @@
 	
 	var React = __webpack_require__(/*! react */ 1);
 	var ReactDOM = __webpack_require__(/*! react-dom */ 34);
-	var css = __webpack_require__(/*! ../../scss/MessageList.scss */ 191);
+	var css = __webpack_require__(/*! ../../scss/MessageList.scss */ 177);
 	
 	var MessageList = React.createClass({
 	    displayName: 'MessageList',
@@ -22385,15 +22389,19 @@
 	    },
 	    render: function render() {
 	        return React.createElement(
-	            'ul',
+	            'div',
 	            { className: 'MessageList' },
-	            this.props.messages.map(function (msg, index) {
-	                return React.createElement(
-	                    'li',
-	                    { key: 'msg' + index },
-	                    msg
-	                );
-	            })
+	            React.createElement(
+	                'ul',
+	                null,
+	                this.props.messages.map(function (msg, index) {
+	                    return React.createElement(
+	                        'li',
+	                        { key: 'msg' + index },
+	                        msg
+	                    );
+	                })
+	            )
 	        );
 	    }
 	});
@@ -22402,331 +22410,25 @@
 
 /***/ },
 /* 177 */
-/*!*******************************************!*\
-  !*** ./React/Presentational/UserList.jsx ***!
-  \*******************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var React = __webpack_require__(/*! react */ 1);
-	var css = __webpack_require__(/*! ../../scss/UserList.scss */ 189);
-	
-	function UserList(props) {
-	    return React.createElement(
-	        'div',
-	        { className: 'UserList' },
-	        React.createElement(
-	            'p',
-	            null,
-	            'Players in lobby: ',
-	            React.createElement(
-	                'span',
-	                { className: 'Heavy' },
-	                props.players.length,
-	                '/',
-	                props.max
-	            )
-	        ),
-	        React.createElement(
-	            'ul',
-	            null,
-	            props.players.map(function (player, index) {
-	                return React.createElement(
-	                    'li',
-	                    { key: 'player' + index },
-	                    React.createElement(
-	                        'span',
-	                        null,
-	                        player.Name
-	                    ),
-	                    React.createElement(
-	                        'span',
-	                        null,
-	                        player.Score
-	                    )
-	                );
-	            })
-	        )
-	    );
-	}
-	
-	UserList.propTypes = {
-	    players: React.PropTypes.arrayOf(React.PropTypes.object),
-	    max: React.PropTypes.number
-	};
-	
-	module.exports = UserList;
-
-/***/ },
-/* 178 */
-/*!**************************************************!*\
-  !*** ./React/Presentational/ComposeQuestion.jsx ***!
-  \**************************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var React = __webpack_require__(/*! react */ 1);
-	var css = __webpack_require__(/*! ../../scss/ComposeQuestion.scss */ 187);
-	
-	function ComposeQuestion(props) {
-	    return React.createElement(
-	        'form',
-	        { action: '', onSubmit: props.submit, className: 'ComposeQuestion' },
-	        React.createElement(
-	            'label',
-	            { htmlFor: 'question' },
-	            'Question: '
-	        ),
-	        React.createElement('textarea', { name: 'question', placeholder: 'Type your question here...', minLength: '3', maxLength: '140', required: true }),
-	        React.createElement(
-	            'label',
-	            { htmlFor: 'correct' },
-	            'Correct: '
-	        ),
-	        React.createElement('input', { name: 'correct', type: 'text', placeholder: 'Correct answer', maxLength: '25', required: true }),
-	        React.createElement(
-	            'label',
-	            null,
-	            'Wrong Answers: '
-	        ),
-	        React.createElement('input', { name: 'wrong1', type: 'text', placeholder: 'Wrong answer', maxLength: '25', required: true }),
-	        React.createElement('input', { name: 'wrong2', type: 'text', placeholder: 'Wrong answer', maxLength: '25', required: true }),
-	        React.createElement('input', { name: 'wrong3', type: 'text', placeholder: 'Wrong answer', maxLength: '25', required: true }),
-	        React.createElement('input', { type: 'submit', value: 'Submit' })
-	    );
-	}
-	
-	module.exports = ComposeQuestion;
-
-/***/ },
-/* 179 */
-/*!*******************************************!*\
-  !*** ./React/Presentational/Question.jsx ***!
-  \*******************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var React = __webpack_require__(/*! react */ 1);
-	
-	function Question(props) {
-	    return React.createElement(
-	        "div",
-	        null,
-	        React.createElement(
-	            "p",
-	            null,
-	            props.question
-	        ),
-	        props.answers.map(function (answer, index) {
-	            return React.createElement(
-	                "div",
-	                { className: "Button", key: "answer" + index, onClick: props.submitAnswer },
-	                answer
-	            );
-	        })
-	    );
-	}
-	
-	module.exports = Question;
-
-/***/ },
-/* 180 */
-/*!******************************************!*\
-  !*** ./React/Presentational/QuizEnd.jsx ***!
-  \******************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var React = __webpack_require__(/*! react */ 1);
-	
-	function QuizEnd(props) {
-	    return React.createElement(
-	        "div",
-	        { className: "QuizEnd" },
-	        React.createElement(
-	            "p",
-	            null,
-	            props.players.length > 1 ? props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!" : props.players[0].Name + " is the only one left :("
-	        ),
-	        React.createElement(
-	            "ul",
-	            null,
-	            props.players.map(function (pl, index) {
-	                return React.createElement(
-	                    "li",
-	                    { key: "scoreboard" + index },
-	                    pl.Name,
-	                    " ",
-	                    React.createElement(
-	                        "span",
-	                        null,
-	                        pl.Score
-	                    )
-	                );
-	            })
-	        ),
-	        React.createElement(
-	            "button",
-	            { onClick: props.playAgain },
-	            "Play Again"
-	        )
-	    );
-	}
-	
-	module.exports = QuizEnd;
-
-/***/ },
-/* 181 */
-/*!**********************************************!*\
-  !*** ./React/Presentational/NewQuizMenu.jsx ***!
-  \**********************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var React = __webpack_require__(/*! react */ 1);
-	
-	var NewQuizMenu = React.createClass({
-	    displayName: "NewQuizMenu",
-	
-	    propTypes: {
-	        createQuiz: React.PropTypes.func.isRequired,
-	        name: React.PropTypes.string
-	    },
-	    preventRefresh: function preventRefresh(e) {
-	        e.preventDefault();
-	        this.props.createQuiz(e.target);
-	    },
-	    render: function render() {
-	        return React.createElement(
-	            "div",
-	            { className: "NewQuizMenu" },
-	            React.createElement(
-	                "h3",
-	                null,
-	                "Create New Quiz"
-	            ),
-	            React.createElement(
-	                "form",
-	                { onSubmit: this.preventRefresh },
-	                React.createElement(
-	                    "label",
-	                    { htmlFor: "quizRoomName" },
-	                    "Room Name: "
-	                ),
-	                React.createElement("input", { type: "text",
-	                    name: "quizRoomName",
-	                    placeholder: this.props.name == null ? "Your room name" : this.props.name + "'s room" }),
-	                React.createElement("br", null),
-	                React.createElement(
-	                    "label",
-	                    { htmlFor: "maxPlayers" },
-	                    "Max Players: "
-	                ),
-	                React.createElement("input", { type: "number",
-	                    name: "maxPlayers",
-	                    placeholder: "Max value is 20" }),
-	                React.createElement("br", null),
-	                React.createElement(
-	                    "label",
-	                    { htmlFor: "isPrivate" },
-	                    "Private Lobby: "
-	                ),
-	                React.createElement("input", { type: "checkbox", name: "isPrivate" }),
-	                React.createElement("br", null),
-	                React.createElement("input", { type: "submit", value: "Create Quiz" })
-	            )
-	        );
-	    }
-	});
-	
-	module.exports = NewQuizMenu;
-
-/***/ },
-/* 182 */
-/*!************************************************!*\
-  !*** ./React/Presentational/PublicQuizzes.jsx ***!
-  \************************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var React = __webpack_require__(/*! react */ 1);
-	
-	var PublicQuizzes = React.createClass({
-	    displayName: "PublicQuizzes",
-	
-	    joinQuiz: function joinQuiz(e) {
-	        this.props.joinQuiz(e.target.textContent);
-	    },
-	    render: function render() {
-	        var _this = this;
-	
-	        return React.createElement(
-	            "div",
-	            { className: "QuizList" },
-	            React.createElement(
-	                "h4",
-	                null,
-	                "Public Quizzes"
-	            ),
-	            this.props.quizzes != null ? React.createElement(
-	                "ul",
-	                null,
-	                this.props.quizzes.map(function (quiz, index) {
-	                    return React.createElement(
-	                        "li",
-	                        { onClick: _this.joinQuiz, key: quiz + index },
-	                        quiz
-	                    );
-	                })
-	            ) : React.createElement(
-	                "p",
-	                null,
-	                "none"
-	            ),
-	            React.createElement(
-	                "div",
-	                { className: "Button", onClick: this.props.refresh },
-	                "Refresh"
-	            )
-	        );
-	    }
-	});
-	
-	PublicQuizzes.propTypes = {
-	    quizzes: React.PropTypes.arrayOf(React.PropTypes.string),
-	    joinQuiz: React.PropTypes.func,
-	    refresh: React.PropTypes.func
-	};
-	
-	module.exports = PublicQuizzes;
-
-/***/ },
-/* 183 */
-/*!************************!*\
-  !*** ./scss/site.scss ***!
-  \************************/
+/*!*******************************!*\
+  !*** ./scss/MessageList.scss ***!
+  \*******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./site.scss */ 184);
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./MessageList.scss */ 178);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
+	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 180)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./site.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./site.scss");
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./MessageList.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./MessageList.scss");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -22736,24 +22438,24 @@
 	}
 
 /***/ },
-/* 184 */
-/*!*******************************************************!*\
-  !*** ./~/css-loader!./~/sass-loader!./scss/site.scss ***!
-  \*******************************************************/
+/* 178 */
+/*!**************************************************************!*\
+  !*** ./~/css-loader!./~/sass-loader!./scss/MessageList.scss ***!
+  \**************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
+	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 179)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, "body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  font-size: 1rem;\n  color: rgba(0, 0, 0, 0.5); }\n\n.App {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch; }\n  .App > div {\n    padding: 1rem; }\n  .App .Options {\n    flex: 1;\n    background-color: #ADF7B6; }\n  .App .Main {\n    flex: 2;\n    background-color: #FFFC99; }\n  .App .UsersAndMessages {\n    flex: 1;\n    background-color: #79ADDC; }\n\n.Heavy {\n  font-weight: 500; }\n\n.Button {\n  margin: 0.5rem;\n  padding: 0.5rem;\n  text-align: center;\n  border-radius: 0.2rem;\n  background-color: rgba(0, 0, 0, 0.1); }\n  .Button:active {\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n\nform {\n  display: flex;\n  flex-direction: column; }\n  form label {\n    padding-top: 1rem; }\n  form input {\n    font-size: 1.2rem; }\n  form input[type=checkbox] {\n    margin: 1rem;\n    transform: scale(2.5); }\n\ninput[type=submit] {\n  width: 100%;\n  border: none;\n  height: 3rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  border-radius: 0.2rem; }\n  input[type=submit]:active {\n    border: none;\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n  input[type=submit]:focus {\n    outline: 0; }\n\n@media (min-width: 667px) {\n  .App {\n    flex-direction: row; }\n    .App > div {\n      padding-top: 10vh; } }\n\n@media (min-width: 1200px) {\n  .App .Options {\n    padding-left: 20vh; }\n  .App .UsersAndMessages {\n    padding-right: 20vh; } }\n", ""]);
+	exports.push([module.id, ".MessageList {\n  overflow-y: scroll;\n  overflow-x: hidden;\n  width: 90%; }\n  .MessageList > ul {\n    width: 75%;\n    list-style: circle; }\n    .MessageList > ul > li {\n      margin: 0.2rem; }\n      .MessageList > ul > li:nth-child(even) {\n        font-weight: 300; }\n", ""]);
 	
 	// exports
 
 
 /***/ },
-/* 185 */
+/* 179 */
 /*!**************************************!*\
   !*** ./~/css-loader/lib/css-base.js ***!
   \**************************************/
@@ -22812,7 +22514,7 @@
 
 
 /***/ },
-/* 186 */
+/* 180 */
 /*!*************************************!*\
   !*** ./~/style-loader/addStyles.js ***!
   \*************************************/
@@ -23067,53 +22769,65 @@
 
 
 /***/ },
-/* 187 */
-/*!***********************************!*\
-  !*** ./scss/ComposeQuestion.scss ***!
-  \***********************************/
+/* 181 */
+/*!*******************************************!*\
+  !*** ./React/Presentational/UserList.jsx ***!
+  \*******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	// style-loader: Adds some css to the DOM by adding a <style> tag
+	'use strict';
 	
-	// load the styles
-	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./ComposeQuestion.scss */ 188);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./ComposeQuestion.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./ComposeQuestion.scss");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
+	var React = __webpack_require__(/*! react */ 1);
+	var css = __webpack_require__(/*! ../../scss/UserList.scss */ 182);
+	
+	function UserList(props) {
+	    return React.createElement(
+	        'div',
+	        { className: 'UserList' },
+	        React.createElement(
+	            'p',
+	            null,
+	            'Players in lobby: ',
+	            React.createElement(
+	                'span',
+	                { className: 'Heavy' },
+	                props.players.length,
+	                '/',
+	                props.max
+	            )
+	        ),
+	        React.createElement(
+	            'ul',
+	            null,
+	            props.players.map(function (player, index) {
+	                return React.createElement(
+	                    'li',
+	                    { key: 'player' + index },
+	                    React.createElement(
+	                        'span',
+	                        { className: 'PlayerName' },
+	                        player.Name
+	                    ),
+	                    React.createElement(
+	                        'span',
+	                        { className: 'PlayerScore' },
+	                        player.Score
+	                    )
+	                );
+	            })
+	        )
+	    );
 	}
+	
+	UserList.propTypes = {
+	    players: React.PropTypes.arrayOf(React.PropTypes.object),
+	    max: React.PropTypes.number
+	};
+	
+	module.exports = UserList;
 
 /***/ },
-/* 188 */
-/*!******************************************************************!*\
-  !*** ./~/css-loader!./~/sass-loader!./scss/ComposeQuestion.scss ***!
-  \******************************************************************/
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "", ""]);
-	
-	// exports
-
-
-/***/ },
-/* 189 */
+/* 182 */
 /*!****************************!*\
   !*** ./scss/UserList.scss ***!
   \****************************/
@@ -23122,10 +22836,10 @@
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./UserList.scss */ 190);
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./UserList.scss */ 183);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
+	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 180)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -23142,43 +22856,292 @@
 	}
 
 /***/ },
-/* 190 */
+/* 183 */
 /*!***********************************************************!*\
   !*** ./~/css-loader!./~/sass-loader!./scss/UserList.scss ***!
   \***********************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
+	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 179)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, ".UserList {\n  width: 80%; }\n  .UserList > ul {\n    width: 100%; }\n    .UserList > ul > li {\n      display: flex;\n      justify-content: space-between;\n      align-items: flex-start; }\n", ""]);
+	exports.push([module.id, ".UserList {\n  width: 90%;\n  overflow-y: scroll;\n  overflow-x: hidden; }\n  .UserList > ul {\n    width: 75%; }\n    .UserList > ul > li {\n      display: flex;\n      justify-content: space-between;\n      align-items: flex-start; }\n", ""]);
 	
 	// exports
 
 
 /***/ },
+/* 184 */
+/*!**************************************************!*\
+  !*** ./React/Presentational/ComposeQuestion.jsx ***!
+  \**************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function ComposeQuestion(props) {
+	    return React.createElement(
+	        "form",
+	        { action: "", onSubmit: props.submit, className: "ComposeQuestion" },
+	        React.createElement(
+	            "label",
+	            { htmlFor: "question" },
+	            "Question: "
+	        ),
+	        React.createElement("textarea", { name: "question", placeholder: "Type your question here...", minLength: "3", maxLength: "140", required: true }),
+	        React.createElement(
+	            "label",
+	            { htmlFor: "correct" },
+	            "Correct: "
+	        ),
+	        React.createElement("input", { name: "correct", type: "text", placeholder: "Correct answer", maxLength: "35", required: true }),
+	        React.createElement(
+	            "label",
+	            null,
+	            "Wrong Answers: "
+	        ),
+	        React.createElement("input", { name: "wrong1", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true }),
+	        React.createElement("input", { name: "wrong2", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true }),
+	        React.createElement("input", { name: "wrong3", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true }),
+	        React.createElement("input", { type: "submit", value: "Submit" })
+	    );
+	}
+	
+	module.exports = ComposeQuestion;
+
+/***/ },
+/* 185 */,
+/* 186 */,
+/* 187 */
+/*!*******************************************!*\
+  !*** ./React/Presentational/Question.jsx ***!
+  \*******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function Question(props) {
+	    return React.createElement(
+	        "div",
+	        null,
+	        React.createElement(
+	            "p",
+	            null,
+	            props.question
+	        ),
+	        props.answers.map(function (answer, index) {
+	            return React.createElement(
+	                "div",
+	                { className: "Button", key: "answer" + index, onClick: props.submitAnswer },
+	                answer
+	            );
+	        })
+	    );
+	}
+	
+	module.exports = Question;
+
+/***/ },
+/* 188 */
+/*!******************************************!*\
+  !*** ./React/Presentational/QuizEnd.jsx ***!
+  \******************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	function QuizEnd(props) {
+	    return React.createElement(
+	        "div",
+	        { className: "QuizEnd" },
+	        React.createElement(
+	            "p",
+	            null,
+	            props.players.length > 1 ? props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!" : props.players[0].Name + " is the only one left :("
+	        ),
+	        React.createElement(
+	            "ul",
+	            null,
+	            props.players.map(function (pl, index) {
+	                return React.createElement(
+	                    "li",
+	                    { key: "scoreboard" + index },
+	                    pl.Name,
+	                    " ",
+	                    React.createElement(
+	                        "span",
+	                        { className: "PlayerScore" },
+	                        pl.Score
+	                    )
+	                );
+	            })
+	        ),
+	        React.createElement(
+	            "button",
+	            { onClick: props.playAgain },
+	            "Play Again"
+	        )
+	    );
+	}
+	
+	module.exports = QuizEnd;
+
+/***/ },
+/* 189 */
+/*!**********************************************!*\
+  !*** ./React/Presentational/NewQuizMenu.jsx ***!
+  \**********************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	var NewQuizMenu = React.createClass({
+	    displayName: "NewQuizMenu",
+	
+	    propTypes: {
+	        createQuiz: React.PropTypes.func.isRequired,
+	        name: React.PropTypes.string
+	    },
+	    preventRefresh: function preventRefresh(e) {
+	        e.preventDefault();
+	        this.props.createQuiz(e.target);
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            "div",
+	            { className: "NewQuizMenu" },
+	            React.createElement(
+	                "h3",
+	                null,
+	                "Create New Quiz"
+	            ),
+	            React.createElement(
+	                "form",
+	                { onSubmit: this.preventRefresh },
+	                React.createElement(
+	                    "label",
+	                    { htmlFor: "quizRoomName" },
+	                    "Room Name: "
+	                ),
+	                React.createElement("input", { type: "text",
+	                    name: "quizRoomName",
+	                    placeholder: this.props.name == null ? "Your room name" : this.props.name + "'s room" }),
+	                React.createElement("br", null),
+	                React.createElement(
+	                    "label",
+	                    { htmlFor: "maxPlayers" },
+	                    "Max Players: "
+	                ),
+	                React.createElement("input", { type: "number",
+	                    name: "maxPlayers",
+	                    placeholder: "Max value is 20" }),
+	                React.createElement("br", null),
+	                React.createElement(
+	                    "label",
+	                    { htmlFor: "isPrivate" },
+	                    "Private Lobby: "
+	                ),
+	                React.createElement("input", { type: "checkbox", name: "isPrivate" }),
+	                React.createElement("br", null),
+	                React.createElement("input", { type: "submit", value: "Create Quiz" })
+	            )
+	        );
+	    }
+	});
+	
+	module.exports = NewQuizMenu;
+
+/***/ },
+/* 190 */
+/*!************************************************!*\
+  !*** ./React/Presentational/PublicQuizzes.jsx ***!
+  \************************************************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var React = __webpack_require__(/*! react */ 1);
+	
+	var PublicQuizzes = React.createClass({
+	    displayName: "PublicQuizzes",
+	
+	    joinQuiz: function joinQuiz(e) {
+	        this.props.joinQuiz(e.target.textContent);
+	    },
+	    render: function render() {
+	        var _this = this;
+	
+	        return React.createElement(
+	            "div",
+	            { className: "QuizList" },
+	            React.createElement(
+	                "h4",
+	                null,
+	                "Public Quizzes"
+	            ),
+	            this.props.quizzes != null ? React.createElement(
+	                "ul",
+	                null,
+	                this.props.quizzes.map(function (quiz, index) {
+	                    return React.createElement(
+	                        "li",
+	                        { onClick: _this.joinQuiz, key: quiz + index },
+	                        quiz
+	                    );
+	                })
+	            ) : React.createElement(
+	                "p",
+	                null,
+	                "none"
+	            ),
+	            React.createElement(
+	                "div",
+	                { className: "Button", onClick: this.props.refresh },
+	                "Refresh"
+	            )
+	        );
+	    }
+	});
+	
+	PublicQuizzes.propTypes = {
+	    quizzes: React.PropTypes.arrayOf(React.PropTypes.string),
+	    joinQuiz: React.PropTypes.func,
+	    refresh: React.PropTypes.func
+	};
+	
+	module.exports = PublicQuizzes;
+
+/***/ },
 /* 191 */
-/*!*******************************!*\
-  !*** ./scss/MessageList.scss ***!
-  \*******************************/
+/*!************************!*\
+  !*** ./scss/site.scss ***!
+  \************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./MessageList.scss */ 192);
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./site.scss */ 192);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 186)(content, {});
+	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 180)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./MessageList.scss", function() {
-				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./MessageList.scss");
+			module.hot.accept("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./site.scss", function() {
+				var newContent = require("!!./../node_modules/css-loader/index.js!./../node_modules/sass-loader/index.js!./site.scss");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -23189,17 +23152,17 @@
 
 /***/ },
 /* 192 */
-/*!**************************************************************!*\
-  !*** ./~/css-loader!./~/sass-loader!./scss/MessageList.scss ***!
-  \**************************************************************/
+/*!*******************************************************!*\
+  !*** ./~/css-loader!./~/sass-loader!./scss/site.scss ***!
+  \*******************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 185)();
+	exports = module.exports = __webpack_require__(/*! ./../~/css-loader/lib/css-base.js */ 179)();
 	// imports
 	
 	
 	// module
-	exports.push([module.id, ".MessageList {\n  overflow-y: scroll;\n  overflow-x: hidden;\n  height: 20rem;\n  list-style: circle; }\n  .MessageList > li {\n    margin: 0.2rem; }\n    .MessageList > li:nth-child(even) {\n      font-weight: 300; }\n", ""]);
+	exports.push([module.id, "body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  font-size: 1rem;\n  color: rgba(0, 0, 0, 0.6); }\n\n.App {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch; }\n  .App > div {\n    padding: 1rem; }\n  .App .Options {\n    flex: 1 0 auto;\n    background-color: #F5F749; }\n  .App .Main {\n    flex: 2 0 auto;\n    background-color: #FFF8F0; }\n  .App .UsersAndMessages {\n    flex: 1 0 auto;\n    background-color: #2E86AB; }\n\n.Heavy {\n  font-weight: 500; }\n\n.Button {\n  margin: 0.5rem;\n  padding: 0.5rem;\n  text-align: center;\n  border-radius: 0.2rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  -moz-user-select: -moz-none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n  .Button:active {\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n\nform {\n  display: flex;\n  flex-direction: column; }\n  form label {\n    padding-top: 1rem; }\n  form input {\n    font-size: 1.2rem; }\n  form input[type=checkbox] {\n    margin: 1rem;\n    transform: scale(2.5); }\n\ninput[type=submit] {\n  width: 100%;\n  border: none;\n  height: 3rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  border-radius: 0.2rem; }\n  input[type=submit]:active {\n    border: none;\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n  input[type=submit]:focus {\n    outline: 0; }\n\n.PlayerName {\n  font-size: 0.9rem; }\n\n.PlayerScore {\n  font-size: 1rem; }\n\n@media (min-width: 1024px) {\n  .App {\n    flex-direction: row; } }\n", ""]);
 	
 	// exports
 

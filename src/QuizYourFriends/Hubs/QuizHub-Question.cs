@@ -86,7 +86,7 @@ namespace QuizYourFriends.Hubs
                 else
                 {
                     MessageGroup(player.Name + " was wrong", quiz.Name);
-                    Clients.Caller.message("The correct answer was '{0}'", question.CorrectAnswer);
+                    Clients.Caller.message(string.Format("The correct answer was '{0}'", question.CorrectAnswer));
                 }
             }
 
