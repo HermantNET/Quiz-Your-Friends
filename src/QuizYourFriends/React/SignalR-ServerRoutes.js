@@ -36,5 +36,9 @@
 
     PlayersReady: function (hub) {
         hub.invoke('PlayersReady');
+    },
+
+    SendMessage: function (hub, msg) {
+        hub.invoke('PlayerMessage', msg);
     }
 }

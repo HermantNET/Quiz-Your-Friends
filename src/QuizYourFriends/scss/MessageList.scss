@@ -1,11 +1,14 @@
-﻿.MessageList {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    width: 90%;
+﻿.Messages {
+    
+    width: 100%;
 
-    & > ul {
+    .MessageList {
         width: 75%;
         list-style: circle;
+        max-height: 50vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        width: 90%;
 
         & > li {
             margin: 0.2rem;

@@ -21994,7 +21994,6 @@
 	        }.bind(this));
 	    },
 	    componentDidMount: function componentDidMount() {
-	
 	        // Client side response code for SignalR
 	        this.state.hub.client.setName = function (name) {
 	            this.setState({
@@ -22115,6 +22114,18 @@
 	            answered: true
 	        });
 	    },
+	    sendMessage: function sendMessage(msg) {
+	        ServerRoutes.SendMessage(this.state.hub, msg);
+	        if (this.state.inRoom) {
+	            this.setState({
+	                messages: this.state.messages.concat("you: " + msg)
+	            });
+	        } else {
+	            this.setState({
+	                messages: this.state.messages.concat("You are not in a room")
+	            });
+	        }
+	    },
 	    // End SignalR call server code
 	
 	    createNewQuiz: function createNewQuiz() {
@@ -22232,7 +22243,7 @@
 	                    null,
 	                    'Messages'
 	                ),
-	                React.createElement(MessageList, { messages: this.state.messages })
+	                React.createElement(MessageList, { messages: this.state.messages, sendMessage: this.sendMessage })
 	            )
 	        );
 	    }
@@ -22364,6 +22375,10 @@
 	
 	    PlayersReady: function PlayersReady(hub) {
 	        hub.invoke('PlayersReady');
+	    },
+	
+	    SendMessage: function SendMessage(hub, msg) {
+	        hub.invoke('PlayerMessage', msg);
 	    }
 	};
 
@@ -22384,16 +22399,20 @@
 	    displayName: 'MessageList',
 	
 	    componentDidUpdate: function componentDidUpdate() {
-	        var node = ReactDOM.findDOMNode(this);
-	        node.scrollTop = node.scrollHeight;
+	        this.refs.msgList.scrollTop = this.refs.msgList.scrollHeight;
+	    },
+	    sendMessage: function sendMessage(e) {
+	        e.preventDefault();
+	        this.props.sendMessage(this.refs.msg.value);
+	        this.refs.msg.value = "";
 	    },
 	    render: function render() {
 	        return React.createElement(
 	            'div',
-	            { className: 'MessageList' },
+	            { className: 'Messages' },
 	            React.createElement(
 	                'ul',
-	                null,
+	                { ref: 'msgList', className: 'MessageList' },
 	                this.props.messages.map(function (msg, index) {
 	                    return React.createElement(
 	                        'li',
@@ -22401,6 +22420,12 @@
 	                        msg
 	                    );
 	                })
+	            ),
+	            React.createElement(
+	                'form',
+	                { onSubmit: this.sendMessage },
+	                React.createElement('input', { ref: 'msg', type: 'text', placeholder: 'Message', maxLength: '140', minLength: '1', required: true }),
+	                React.createElement('input', { type: 'submit', value: 'Send' })
 	            )
 	        );
 	    }
@@ -22449,7 +22474,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".MessageList {\n  overflow-y: scroll;\n  overflow-x: hidden;\n  width: 90%; }\n  .MessageList > ul {\n    width: 75%;\n    list-style: circle; }\n    .MessageList > ul > li {\n      margin: 0.2rem; }\n      .MessageList > ul > li:nth-child(even) {\n        font-weight: 300; }\n", ""]);
+	exports.push([module.id, ".Messages {\n  width: 100%; }\n  .Messages .MessageList {\n    width: 75%;\n    list-style: circle;\n    max-height: 50vh;\n    overflow-y: scroll;\n    overflow-x: hidden;\n    width: 90%; }\n    .Messages .MessageList > li {\n      margin: 0.2rem; }\n      .Messages .MessageList > li:nth-child(even) {\n        font-weight: 300; }\n", ""]);
 	
 	// exports
 
@@ -22867,7 +22892,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".UserList {\n  width: 90%;\n  overflow-y: scroll;\n  overflow-x: hidden; }\n  .UserList > ul {\n    width: 75%; }\n    .UserList > ul > li {\n      display: flex;\n      justify-content: space-between;\n      align-items: flex-start; }\n", ""]);
+	exports.push([module.id, ".UserList {\n  width: 100%;\n  overflow-y: scroll;\n  overflow-x: hidden;\n  max-height: 30vh; }\n  .UserList > ul {\n    width: 100%; }\n    .UserList > ul > li {\n      width: 75%;\n      display: flex;\n      justify-content: space-between;\n      align-items: flex-start; }\n", ""]);
 	
 	// exports
 
@@ -22922,28 +22947,34 @@
   \*******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	var React = __webpack_require__(/*! react */ 1);
 	
-	function Question(props) {
-	    return React.createElement(
-	        "div",
-	        null,
-	        React.createElement(
-	            "p",
+	var Question = React.createClass({
+	    displayName: 'Question',
+	
+	    render: function render() {
+	        var _this = this;
+	
+	        return React.createElement(
+	            'div',
 	            null,
-	            props.question
-	        ),
-	        props.answers.map(function (answer, index) {
-	            return React.createElement(
-	                "div",
-	                { className: "Button", key: "answer" + index, onClick: props.submitAnswer },
-	                answer
-	            );
-	        })
-	    );
-	}
+	            React.createElement(
+	                'p',
+	                { style: { maxWidth: '20rem', overflowWrap: 'break-word' } },
+	                this.props.question
+	            ),
+	            this.props.answers.map(function (answer, index) {
+	                return React.createElement(
+	                    'div',
+	                    { className: 'Button', key: "answer" + index, onClick: _this.props.submitAnswer },
+	                    answer
+	                );
+	            })
+	        );
+	    }
+	});
 	
 	module.exports = Question;
 
@@ -22968,19 +22999,13 @@
 	            props.players.length > 1 ? props.players[0].Score == props.players[1].Score ? "Tie!" : props.players[0].Name + " wins!" : props.players[0].Name + " is the only one left :("
 	        ),
 	        React.createElement(
-	            "ul",
+	            "ol",
 	            null,
 	            props.players.map(function (pl, index) {
 	                return React.createElement(
 	                    "li",
 	                    { key: "scoreboard" + index },
-	                    pl.Name,
-	                    " ",
-	                    React.createElement(
-	                        "span",
-	                        { className: "PlayerScore" },
-	                        pl.Score
-	                    )
+	                    pl.Name
 	                );
 	            })
 	        ),
@@ -23162,7 +23187,7 @@
 	
 	
 	// module
-	exports.push([module.id, "body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  font-size: 1rem;\n  color: rgba(0, 0, 0, 0.6); }\n\n.App {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch; }\n  .App > div {\n    padding: 1rem; }\n  .App .Options {\n    flex: 1 0 auto;\n    background-color: #F5F749; }\n  .App .Main {\n    flex: 2 0 auto;\n    background-color: #FFF8F0; }\n  .App .UsersAndMessages {\n    flex: 1 0 auto;\n    background-color: #2E86AB; }\n\n.Heavy {\n  font-weight: 500; }\n\n.Button {\n  margin: 0.5rem;\n  padding: 0.5rem;\n  text-align: center;\n  border-radius: 0.2rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  -moz-user-select: -moz-none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n  .Button:active {\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n\nform {\n  display: flex;\n  flex-direction: column; }\n  form label {\n    padding-top: 1rem; }\n  form input {\n    font-size: 1.2rem; }\n  form input[type=checkbox] {\n    margin: 1rem;\n    transform: scale(2.5); }\n\ninput[type=submit] {\n  width: 100%;\n  border: none;\n  height: 3rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  border-radius: 0.2rem; }\n  input[type=submit]:active {\n    border: none;\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n  input[type=submit]:focus {\n    outline: 0; }\n\n.PlayerName {\n  font-size: 0.9rem; }\n\n.PlayerScore {\n  font-size: 1rem; }\n\n@media (min-width: 1024px) {\n  .App {\n    flex-direction: row; } }\n", ""]);
+	exports.push([module.id, "body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  font-size: 1rem;\n  color: rgba(0, 0, 0, 0.6); }\n\n.App {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch; }\n  .App > div {\n    padding: 1rem; }\n  .App .Options {\n    flex: 1 0 auto;\n    background-color: #F5F749; }\n  .App .Main {\n    flex: 2 0 auto;\n    background-color: #FFF8F0; }\n  .App .UsersAndMessages {\n    flex: 1 0 auto;\n    background-color: #2E86AB; }\n\n.Heavy {\n  font-weight: 500; }\n\n.Button {\n  margin: 0.5rem;\n  padding: 0.5rem;\n  text-align: center;\n  border-radius: 0.2rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  -moz-user-select: -moz-none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n  .Button:active {\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n\nform {\n  display: flex;\n  flex-direction: column; }\n  form label {\n    padding-top: 1rem; }\n  form input {\n    font-size: 1.2rem; }\n  form input[type=checkbox] {\n    margin: 1rem;\n    transform: scale(2.5); }\n\ninput[type=submit] {\n  width: 100%;\n  border: none;\n  height: 3rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  border-radius: 0.2rem; }\n  input[type=submit]:active {\n    border: none;\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n  input[type=submit]:focus {\n    outline: 0; }\n\n.PlayerName {\n  font-size: 0.9rem; }\n\n.PlayerScore {\n  font-size: 1rem; }\n\n@media (min-width: 768px) {\n  .App {\n    flex-direction: row; } }\n", ""]);
 	
 	// exports
 

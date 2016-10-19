@@ -50,5 +50,21 @@ namespace QuizYourFriends.Hubs
             var quiz = GetCurrentQuiz();
             Clients.Caller.playersReady(quiz.Players.Where(p => p.Ready).Count());
         }
+
+        public void PlayerMessage(string msg)
+        {
+            if (IsInRoom())
+            {
+                var quiz = GetCurrentQuiz().Name;
+                var player = GetCurrentPlayer().Name;
+                if (msg.Length < 2 && msg.Length <= 140)
+                {
+                    Clients.Caller.message("Message must be between 1 and 140 characters");
+                } else
+                {
+                    Clients.OthersInGroup(quiz).message(player + ": " + (msg.Length > 140 ? msg.Substring(0, 140) : msg));
+                }
+            }
+        }
     }
 }

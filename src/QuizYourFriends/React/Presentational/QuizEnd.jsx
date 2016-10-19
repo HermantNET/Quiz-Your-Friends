@@ -11,11 +11,11 @@ function QuizEnd(props) {
                 props.players[0].Name + " is the only one left :("
               }
           </p>
-          <ul>
+          <ol>
               {props.players.map((pl, index) => {
-                  return <li key={"scoreboard" + index}>{pl.Name} <span className="PlayerScore">{pl.Score}</span></li>
+                  return <li key={"scoreboard" + index}>{pl.Name}</li>
               })}
-          </ul>
+          </ol>
           <button onClick={props.playAgain}>Play Again</button>
       </div>
     );

@@ -44,7 +44,6 @@ var QuizGameContainer = React.createClass({
         }.bind(this));
     },
     componentDidMount: function () {
-
         // Client side response code for SignalR
         this.state.hub.client.setName = function (name) {
             this.setState({
@@ -165,6 +164,18 @@ var QuizGameContainer = React.createClass({
             answered: true
         });
     },
+    sendMessage: function (msg) {
+        ServerRoutes.SendMessage(this.state.hub, msg);
+        if (this.state.inRoom) {
+            this.setState({
+                messages: this.state.messages.concat("you: " + msg)
+            });
+        } else {
+            this.setState({
+                messages: this.state.messages.concat("You are not in a room")
+            });
+        }
+    },
     // End SignalR call server code
 
     createNewQuiz: function () {
@@ -229,7 +240,7 @@ var QuizGameContainer = React.createClass({
                 <div className="UsersAndMessages">
                     {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers } /> : ''}
                     <h4>Messages</h4>
-                    <MessageList messages={this.state.messages} />
+                    <MessageList messages={this.state.messages} sendMessage={this.sendMessage} />
                 </div>
             </div>
         );
