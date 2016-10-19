@@ -58,8 +58,9 @@ var QuizGameContainer = React.createClass({
         }.bind(this);
 
         this.state.hub.client.getPublicQuizzes = function (quizzes) {
+            console.log(quizzes);
             this.setState({
-                publicQuizzes: quizzes
+                publicQuizzes: JSON.parse(quizzes)
             });
         }.bind(this);
 

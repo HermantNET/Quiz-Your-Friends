@@ -100,6 +100,12 @@ input[type=submit] {
     font-size: 1rem;
 }
 
+.QuizList {
+    & > ul {
+        list-style: square;
+    }
+}
+
 @media (min-width: 768px) {
     .App {
         flex-direction: row;

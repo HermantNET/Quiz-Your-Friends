@@ -12,7 +12,7 @@ var PublicQuizzes = React.createClass({
             this.props.quizzes != null ?
             <ul>
                 {this.props.quizzes.map((quiz, index) =>
-                    <li onClick={this.joinQuiz} key={quiz + index}>{quiz}</li>
+                    <li className="Button" onClick={this.joinQuiz} key={quiz.Name + index}>{quiz.Name} <span>{quiz.Count}/{quiz.MaxPlayers}</span></li>
                 )}
             </ul>
             :
@@ -25,7 +25,7 @@ var PublicQuizzes = React.createClass({
 });
 
 PublicQuizzes.propTypes = {
-    quizzes: React.PropTypes.arrayOf(React.PropTypes.string),
+    quizzes: React.PropTypes.arrayOf(React.PropTypes.object),
     joinQuiz: React.PropTypes.func,
     refresh: React.PropTypes.func
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using QuizYourFriends.Models;
+using Newtonsoft.Json;
 
 namespace QuizYourFriends.Hubs
 {
@@ -49,9 +50,11 @@ namespace QuizYourFriends.Hubs
 
         public void GetPublicQuizzes()
         {
-            var quizzes = Quizzes.Where(q => q.PrivateLobby == false).Select(q => q.Name).ToArray();
+            var quizzes = Quizzes.Where(q => q.PrivateLobby == false && q.Started == false)
+                                 .Select(q => new { q.Name, q.Players.Count, q.MaxPlayers })
+                                 .ToArray();
             if (quizzes.Length == 0) quizzes = null;
-            Clients.Caller.getPublicQuizzes(quizzes);
+            Clients.Caller.getPublicQuizzes(JsonConvert.SerializeObject(quizzes));
         }
 
         // On Disconnect, remove player from ConnectedPlayers List

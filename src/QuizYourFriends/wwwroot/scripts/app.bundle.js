@@ -22008,8 +22008,9 @@
 	        }.bind(this);
 	
 	        this.state.hub.client.getPublicQuizzes = function (quizzes) {
+	            console.log(quizzes);
 	            this.setState({
-	                publicQuizzes: quizzes
+	                publicQuizzes: JSON.parse(quizzes)
 	            });
 	        }.bind(this);
 	
@@ -22424,7 +22425,7 @@
 	            React.createElement(
 	                'form',
 	                { onSubmit: this.sendMessage },
-	                React.createElement('input', { ref: 'msg', type: 'text', placeholder: 'Message', maxLength: '140', minLength: '1', required: true }),
+	                React.createElement('input', { ref: 'msg', type: 'text', placeholder: 'Message', maxLength: '140', minLength: '1', required: true, autoComplete: 'off' }),
 	                React.createElement('input', { type: 'submit', value: 'Send' })
 	            )
 	        );
@@ -22474,7 +22475,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".Messages {\n  width: 100%; }\n  .Messages .MessageList {\n    width: 75%;\n    list-style: circle;\n    max-height: 50vh;\n    overflow-y: scroll;\n    overflow-x: hidden;\n    width: 90%; }\n    .Messages .MessageList > li {\n      margin: 0.2rem; }\n      .Messages .MessageList > li:nth-child(even) {\n        font-weight: 300; }\n", ""]);
+	exports.push([module.id, ".Messages {\n  width: 100%; }\n  .Messages .MessageList {\n    width: 75%;\n    list-style: circle;\n    max-height: 30vh;\n    overflow-y: scroll;\n    overflow-x: hidden;\n    width: 90%; }\n    .Messages .MessageList > li {\n      margin: 0.2rem; }\n      .Messages .MessageList > li:nth-child(even) {\n        font-weight: 300; }\n", ""]);
 	
 	// exports
 
@@ -22917,21 +22918,21 @@
 	            { htmlFor: "question" },
 	            "Question: "
 	        ),
-	        React.createElement("textarea", { name: "question", placeholder: "Type your question here...", minLength: "3", maxLength: "140", required: true }),
+	        React.createElement("textarea", { name: "question", placeholder: "Type your question here...", minLength: "3", maxLength: "140", required: true, autoComplete: "off" }),
 	        React.createElement(
 	            "label",
 	            { htmlFor: "correct" },
 	            "Correct: "
 	        ),
-	        React.createElement("input", { name: "correct", type: "text", placeholder: "Correct answer", maxLength: "35", required: true }),
+	        React.createElement("input", { name: "correct", type: "text", placeholder: "Correct answer", maxLength: "35", required: true, autoComplete: "off" }),
 	        React.createElement(
 	            "label",
 	            null,
 	            "Wrong Answers: "
 	        ),
-	        React.createElement("input", { name: "wrong1", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true }),
-	        React.createElement("input", { name: "wrong2", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true }),
-	        React.createElement("input", { name: "wrong3", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true }),
+	        React.createElement("input", { name: "wrong1", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true, autoComplete: "off" }),
+	        React.createElement("input", { name: "wrong2", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true, autoComplete: "off" }),
+	        React.createElement("input", { name: "wrong3", type: "text", placeholder: "Wrong answer", maxLength: "35", required: true, autoComplete: "off" }),
 	        React.createElement("input", { type: "submit", value: "Submit" })
 	    );
 	}
@@ -23120,8 +23121,16 @@
 	                this.props.quizzes.map(function (quiz, index) {
 	                    return React.createElement(
 	                        "li",
-	                        { onClick: _this.joinQuiz, key: quiz + index },
-	                        quiz
+	                        { className: "Button", onClick: _this.joinQuiz, key: quiz.Name + index },
+	                        quiz.Name,
+	                        " ",
+	                        React.createElement(
+	                            "span",
+	                            null,
+	                            quiz.Count,
+	                            "/",
+	                            quiz.MaxPlayers
+	                        )
 	                    );
 	                })
 	            ) : React.createElement(
@@ -23139,7 +23148,7 @@
 	});
 	
 	PublicQuizzes.propTypes = {
-	    quizzes: React.PropTypes.arrayOf(React.PropTypes.string),
+	    quizzes: React.PropTypes.arrayOf(React.PropTypes.object),
 	    joinQuiz: React.PropTypes.func,
 	    refresh: React.PropTypes.func
 	};
@@ -23187,7 +23196,7 @@
 	
 	
 	// module
-	exports.push([module.id, "body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  font-size: 1rem;\n  color: rgba(0, 0, 0, 0.6); }\n\n.App {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch; }\n  .App > div {\n    padding: 1rem; }\n  .App .Options {\n    flex: 1 0 auto;\n    background-color: #F5F749; }\n  .App .Main {\n    flex: 2 0 auto;\n    background-color: #FFF8F0; }\n  .App .UsersAndMessages {\n    flex: 1 0 auto;\n    background-color: #2E86AB; }\n\n.Heavy {\n  font-weight: 500; }\n\n.Button {\n  margin: 0.5rem;\n  padding: 0.5rem;\n  text-align: center;\n  border-radius: 0.2rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  -moz-user-select: -moz-none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n  .Button:active {\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n\nform {\n  display: flex;\n  flex-direction: column; }\n  form label {\n    padding-top: 1rem; }\n  form input {\n    font-size: 1.2rem; }\n  form input[type=checkbox] {\n    margin: 1rem;\n    transform: scale(2.5); }\n\ninput[type=submit] {\n  width: 100%;\n  border: none;\n  height: 3rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  border-radius: 0.2rem; }\n  input[type=submit]:active {\n    border: none;\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n  input[type=submit]:focus {\n    outline: 0; }\n\n.PlayerName {\n  font-size: 0.9rem; }\n\n.PlayerScore {\n  font-size: 1rem; }\n\n@media (min-width: 768px) {\n  .App {\n    flex-direction: row; } }\n", ""]);
+	exports.push([module.id, "body {\n  margin: 0;\n  font-family: 'Roboto', sans-serif;\n  font-size: 1rem;\n  color: rgba(0, 0, 0, 0.6); }\n\n.App {\n  position: absolute;\n  height: 100%;\n  width: 100%;\n  display: flex;\n  flex-direction: column;\n  align-items: stretch; }\n  .App > div {\n    padding: 1rem; }\n  .App .Options {\n    flex: 1 0 auto;\n    background-color: #F5F749; }\n  .App .Main {\n    flex: 2 0 auto;\n    background-color: #FFF8F0; }\n  .App .UsersAndMessages {\n    flex: 1 0 auto;\n    background-color: #2E86AB; }\n\n.Heavy {\n  font-weight: 500; }\n\n.Button {\n  margin: 0.5rem;\n  padding: 0.5rem;\n  text-align: center;\n  border-radius: 0.2rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  -moz-user-select: -moz-none;\n  -webkit-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n  .Button:active {\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n\nform {\n  display: flex;\n  flex-direction: column; }\n  form label {\n    padding-top: 1rem; }\n  form input {\n    font-size: 1.2rem; }\n  form input[type=checkbox] {\n    margin: 1rem;\n    transform: scale(2.5); }\n\ninput[type=submit] {\n  width: 100%;\n  border: none;\n  height: 3rem;\n  background-color: rgba(0, 0, 0, 0.1);\n  border-radius: 0.2rem; }\n  input[type=submit]:active {\n    border: none;\n    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0, 0, 0, 0.6) inset;\n    background-color: rgba(0, 0, 0, 0.2); }\n  input[type=submit]:focus {\n    outline: 0; }\n\n.PlayerName {\n  font-size: 0.9rem; }\n\n.PlayerScore {\n  font-size: 1rem; }\n\n.QuizList > ul {\n  list-style: square; }\n\n@media (min-width: 768px) {\n  .App {\n    flex-direction: row; } }\n", ""]);
 	
 	// exports
 

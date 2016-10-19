@@ -62,7 +62,11 @@ namespace QuizYourFriends.Hubs
                     Clients.Caller.message("Message must be between 1 and 140 characters");
                 } else
                 {
-                    Clients.OthersInGroup(quiz).message(player + ": " + (msg.Length > 140 ? msg.Substring(0, 140) : msg));
+                    Clients.OthersInGroup(quiz).message(player + ": " + (msg.Length > 140 ?
+                                                                            msg.Substring(0, 140) 
+                                                                            :
+                                                                            msg
+                                                                        ));
                 }
             }
         }

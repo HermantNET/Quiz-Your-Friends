@@ -20,7 +20,7 @@ var MessageList = React.createClass({
                     })}
                 </ul>
                 <form onSubmit={this.sendMessage}>
-                    <input ref="msg" type="text" placeholder="Message" maxLength="140" minLength="1" required />
+                    <input ref="msg" type="text" placeholder="Message" maxLength="140" minLength="1" required autoComplete="off" />
                     <input type="submit" value="Send" />
                 </form>
             </div>
