@@ -53,7 +53,7 @@
 	var ReactDOM = __webpack_require__(/*! react-dom */ 34);
 	var QuizGameContainer = __webpack_require__(/*! ./Containers/QuizGameContainer.jsx */ 172);
 	// Node-Sass doesn't work at school development machine.
-	var css = __webpack_require__(/*! ../scss/site.scss */ 191);
+	var css = __webpack_require__(/*! ../scss/site.scss */ 189);
 	
 	ReactDOM.render(React.createElement(QuizGameContainer, null), document.getElementById('app'));
 
@@ -21953,10 +21953,10 @@
 	var MessageList = __webpack_require__(/*! .././Presentational/MessageList.jsx */ 176);
 	var UserList = __webpack_require__(/*! .././Presentational/UserList.jsx */ 181);
 	var ComposeQuestion = __webpack_require__(/*! .././Presentational/ComposeQuestion.jsx */ 184);
-	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 187);
-	var QuizEnd = __webpack_require__(/*! .././Presentational/QuizEnd.jsx */ 188);
-	var NewQuizMenu = __webpack_require__(/*! .././Presentational/NewQuizMenu.jsx */ 189);
-	var PublicQuizzes = __webpack_require__(/*! .././Presentational/PublicQuizzes.jsx */ 190);
+	var Question = __webpack_require__(/*! .././Presentational/Question.jsx */ 185);
+	var QuizEnd = __webpack_require__(/*! .././Presentational/QuizEnd.jsx */ 186);
+	var NewQuizMenu = __webpack_require__(/*! .././Presentational/NewQuizMenu.jsx */ 187);
+	var PublicQuizzes = __webpack_require__(/*! .././Presentational/PublicQuizzes.jsx */ 188);
 	
 	var QuizGameContainer = React.createClass({
 	    displayName: 'QuizGameContainer',
@@ -22940,9 +22940,7 @@
 	module.exports = ComposeQuestion;
 
 /***/ },
-/* 185 */,
-/* 186 */,
-/* 187 */
+/* 185 */
 /*!*******************************************!*\
   !*** ./React/Presentational/Question.jsx ***!
   \*******************************************/
@@ -22980,7 +22978,7 @@
 	module.exports = Question;
 
 /***/ },
-/* 188 */
+/* 186 */
 /*!******************************************!*\
   !*** ./React/Presentational/QuizEnd.jsx ***!
   \******************************************/
@@ -23021,7 +23019,7 @@
 	module.exports = QuizEnd;
 
 /***/ },
-/* 189 */
+/* 187 */
 /*!**********************************************!*\
   !*** ./React/Presentational/NewQuizMenu.jsx ***!
   \**********************************************/
@@ -23088,7 +23086,7 @@
 	module.exports = NewQuizMenu;
 
 /***/ },
-/* 190 */
+/* 188 */
 /*!************************************************!*\
   !*** ./React/Presentational/PublicQuizzes.jsx ***!
   \************************************************/
@@ -23101,9 +23099,6 @@
 	var PublicQuizzes = React.createClass({
 	    displayName: "PublicQuizzes",
 	
-	    joinQuiz: function joinQuiz(e) {
-	        this.props.joinQuiz(e.target.textContent);
-	    },
 	    render: function render() {
 	        var _this = this;
 	
@@ -23121,8 +23116,14 @@
 	                this.props.quizzes.map(function (quiz, index) {
 	                    return React.createElement(
 	                        "li",
-	                        { className: "Button", onClick: _this.joinQuiz, key: quiz.Name + index },
-	                        quiz.Name,
+	                        { className: "Button", onClick: function onClick() {
+	                                return _this.props.joinQuiz(quiz.Name);
+	                            }, key: quiz.Name + index },
+	                        React.createElement(
+	                            "span",
+	                            null,
+	                            quiz.Name
+	                        ),
 	                        " ",
 	                        React.createElement(
 	                            "span",
@@ -23156,7 +23157,7 @@
 	module.exports = PublicQuizzes;
 
 /***/ },
-/* 191 */
+/* 189 */
 /*!************************!*\
   !*** ./scss/site.scss ***!
   \************************/
@@ -23165,7 +23166,7 @@
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./site.scss */ 192);
+	var content = __webpack_require__(/*! !./../~/css-loader!./../~/sass-loader!./site.scss */ 190);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(/*! ./../~/style-loader/addStyles.js */ 180)(content, {});
@@ -23185,7 +23186,7 @@
 	}
 
 /***/ },
-/* 192 */
+/* 190 */
 /*!*******************************************************!*\
   !*** ./~/css-loader!./~/sass-loader!./scss/site.scss ***!
   \*******************************************************/

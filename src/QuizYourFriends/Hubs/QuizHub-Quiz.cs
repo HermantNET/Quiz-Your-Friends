@@ -65,7 +65,7 @@ namespace QuizYourFriends.Hubs
 
         }
 
-        public async void JoinQuiz(string name)
+        public async Task JoinQuiz(string name)
         {
             // Check if quiz exists
             var exists = Quizzes.Exists(q => q.Name == name);
@@ -79,7 +79,7 @@ namespace QuizYourFriends.Hubs
                 {
                     // Leave room if already in another quiz
                     if (IsInRoom())
-                        LeaveQuiz();
+                        await LeaveQuiz();
 
                     var player = GetCurrentPlayer();
 
@@ -107,7 +107,7 @@ namespace QuizYourFriends.Hubs
             }
         }
 
-        public void LeaveQuiz()
+        public async Task LeaveQuiz()
         {
             var player = GetCurrentPlayer();
             var quiz = GetCurrentQuiz();
@@ -121,7 +121,7 @@ namespace QuizYourFriends.Hubs
                 // Delete Quiz room if no players are in it
                 if (quiz.Players.Count - 1 == 0)
                 {
-                    Groups.Remove(Context.ConnectionId, quiz.Name);
+                    await Groups.Remove(Context.ConnectionId, quiz.Name);
                     Quizzes.Remove(quiz);
                 }
                 else
@@ -129,7 +129,7 @@ namespace QuizYourFriends.Hubs
                     quiz.Players.Remove(player);
                     PlayersInLobby(quiz);
                     MessageGroup(player.Name + " left the room", quiz.Name);
-                    Groups.Remove(Context.ConnectionId, quiz.Name);
+                    await Groups.Remove(Context.ConnectionId, quiz.Name);
                 }
 
                 player.Score = 0;
