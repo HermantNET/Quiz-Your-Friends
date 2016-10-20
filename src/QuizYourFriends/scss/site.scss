@@ -103,6 +103,12 @@ input[type=submit] {
 .QuizList {
     & > ul {
         list-style: square;
+        width: 75%;
+        list-style: circle;
+        max-height: 50vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        width: 90%;
     }
 }
 

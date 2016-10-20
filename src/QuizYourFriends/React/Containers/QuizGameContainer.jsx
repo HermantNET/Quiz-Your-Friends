@@ -28,6 +28,8 @@ var QuizGameContainer = React.createClass({
             playersFinal: [],
             name: 'Anon',
             messages: [],
+            currentQuestionNum: 0,
+            questionCount: 0,
             question: 'none',
             answers: [],
             answered: false
@@ -72,7 +74,8 @@ var QuizGameContainer = React.createClass({
 
         this.state.hub.client.startQuiz = function (bool) {
             this.setState({
-                started: bool
+                started: bool,
+                questionCount: this.state.players.length
             });
         }.bind(this);
 
@@ -97,11 +100,12 @@ var QuizGameContainer = React.createClass({
             });
         }.bind(this);
 
-        this.state.hub.client.question = function (question, answers) {
+        this.state.hub.client.question = function (question, answers, qNum) {
             this.setState({
                 question: question,
                 answers: JSON.parse(answers),
-                answered: false
+                answered: false,
+                currentQuestionNum: qNum
             });
         }.bind(this);
 
@@ -213,7 +217,10 @@ var QuizGameContainer = React.createClass({
         else if (this.state.started && !this.state.ended) {
             view = <Question submitAnswer={this.submitAnswer}
                              question={this.state.question}
-                             answers={this.state.answers} />
+                             answers={this.state.answers}
+                             questionCount={this.state.questionCount}
+                             currentQuestionNum={this.state.currentQuestionNum}
+                           />
         }
         else if (this.state.ended) {
             view = <QuizEnd players={this.state.playersFinal} playAgain={this.playAgain } />;

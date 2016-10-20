@@ -8,6 +8,10 @@ module.exports = {
         path: './wwwroot/scripts',
         filename: 'app.bundle.js'
     },
+    externals: {
+        "react": "React",
+        "react-dom": "ReactDOM"
+    },
     module: {
         loaders: [
             {

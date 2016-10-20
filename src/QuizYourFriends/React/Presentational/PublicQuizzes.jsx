@@ -7,7 +7,7 @@ var PublicQuizzes = React.createClass({
             <h4>Public Quizzes</h4>
             {
             this.props.quizzes != null ?
-            <ul>
+            <ul className="PublicQuizList">
                 {this.props.quizzes.map((quiz, index) =>
                     <li className="Button" onClick={() => this.props.joinQuiz(quiz.Name)} key={quiz.Name + index }><span>{quiz.Name}</span> <span>{quiz.Count}/{quiz.MaxPlayers}</span></li>
                 )}

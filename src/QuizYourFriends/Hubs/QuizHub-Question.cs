@@ -59,7 +59,8 @@ namespace QuizYourFriends.Hubs
             {
                 // Send client the question and scrambled answers
                 Clients.Group(quiz.Name).question(question.Statement,
-                    JsonConvert.SerializeObject(ScrambleAnswers(question.CorrectAnswer, question.WrongAnswers)));
+                    JsonConvert.SerializeObject(ScrambleAnswers(question.CorrectAnswer, question.WrongAnswers)),
+                    quiz.CurrentQuestion + 1);
             }
         }
 
