@@ -68,34 +68,39 @@ namespace QuizYourFriends.Hubs
         public void SubmitAnswer(string answer)
         {
             var quiz = GetCurrentQuiz();
-            var player = GetCurrentPlayer();
-            var question = quiz.Questions.ElementAt(quiz.CurrentQuestion);
-
-            // If a player has already answered a question they will not be given another chance ;)
-            if (question.AnsweredBy.Any(conId => Context.ConnectionId == conId))
+            if (quiz.CurrentQuestion > quiz.Questions.Count)
             {
-                Clients.Caller.message("You have already answered this question");
-            }
-            else
+                EndQuiz();
+            } else
             {
-                question.AnsweredBy.Add(Context.ConnectionId);
-                if (answer == question.CorrectAnswer)
+                var question = quiz.Questions.ElementAt(quiz.CurrentQuestion);
+                // If a player has already answered a question they will not be given another chance ;)
+                if (question.AnsweredBy.Any(conId => Context.ConnectionId == conId))
                 {
-                    player.Score += 50;
-                    PlayersInLobby(quiz);
-                    MessageGroup(player.Name + " was correct", quiz.Name);
+                    Clients.Caller.message("You have already answered this question");
                 }
                 else
                 {
-                    MessageGroup(player.Name + " was wrong", quiz.Name);
-                    Clients.Caller.message(string.Format("The correct answer was '{0}'", question.CorrectAnswer));
+                    var player = GetCurrentPlayer();
+                    question.AnsweredBy.Add(Context.ConnectionId);
+                    if (answer == question.CorrectAnswer)
+                    {
+                        player.Score += 50;
+                        PlayersInLobby(quiz);
+                        MessageGroup(player.Name + " was correct", quiz.Name);
+                    }
+                    else
+                    {
+                        MessageGroup(player.Name + " was wrong", quiz.Name);
+                        Clients.Caller.message(string.Format("The correct answer was '{0}'", question.CorrectAnswer));
+                    }
                 }
-            }
 
-            // Check if all users have answered the question, if so proceed to the next one
-            if (question.AnsweredBy.Count == quiz.Players.Count)
-            {
-                Question();
+                // Check if all users have answered the question, if so proceed to the next one
+                if (question.AnsweredBy.Count == quiz.Players.Count)
+                {
+                    Question();
+                }
             }
         }
     }
