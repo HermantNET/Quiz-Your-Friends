@@ -4,7 +4,7 @@
     },
 
     CreateQuiz: function (hub, quiz) {
-        let maxPlayers = quiz.maxPlayers.value == "" ? "5" : quiz.maxPlayers.value; 
+        let maxPlayers = quiz.maxPlayers.value === "" ? "5" : quiz.maxPlayers.value; 
         hub.invoke('CreateQuiz', quiz.isPrivate.checked, quiz.quizRoomName.value, maxPlayers);
     },
 

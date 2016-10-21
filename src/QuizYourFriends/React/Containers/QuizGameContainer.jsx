@@ -100,12 +100,17 @@ var QuizGameContainer = React.createClass({
             });
         }.bind(this);
 
-        this.state.hub.client.question = function (question, answers, qNum) {
+        this.state.hub.client.incrementQuestionCount = function (num) {
+            this.setState({
+                questionCount: this.state.questionCount + 1
+            });
+        }.bind(this);
+
+        this.state.hub.client.question = function (question, answers) {
             this.setState({
                 question: question,
                 answers: JSON.parse(answers),
-                answered: false,
-                currentQuestionNum: qNum
+                answered: false
             });
         }.bind(this);
 
@@ -162,6 +167,9 @@ var QuizGameContainer = React.createClass({
     submitQuestion: function (e) {
         e.preventDefault();
         ServerRoutes.SubmitQuestion(this.state.hub, e.target);
+        this.setState({
+            messages: this.state.messages.concat("Question submitted. Waiting for all players to submit their questions...")
+        });
     },
     submitAnswer: function (e) {
         ServerRoutes.SubmitAnswer(this.state.hub, e.target.textContent);
@@ -212,7 +220,7 @@ var QuizGameContainer = React.createClass({
             view = <QuizRoom ready={this.state.readyCount} playerCount={this.state.players == [] ? 1 : this.state.players.length } />;
         }
         else if (this.state.getQuestions && !this.state.started) {
-            view = <ComposeQuestion submit={this.submitQuestion} />
+            view = <ComposeQuestion submit={this.submitQuestion} questionsSubmitted={this.state.questionCount} />
         }
         else if (this.state.started && !this.state.ended) {
             view = <Question submitAnswer={this.submitAnswer}
@@ -238,7 +246,8 @@ var QuizGameContainer = React.createClass({
                     <QuizMenu createNewQuiz={this.createNewQuiz}
                               joinQuiz={() => this.joinQuiz(null)}
                               leaveQuiz={this.leaveQuiz}
-                              readyUp={this.readyUp} />
+                              readyUp={this.readyUp}
+                              inRoom={this.state.inRoom} />
                 </div>
                 <div className="Main">
                     {this.state.createQuiz ? <NewQuizMenu createQuiz={this.createQuiz} name={this.state.name } /> : ''}
@@ -249,6 +258,12 @@ var QuizGameContainer = React.createClass({
                     {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers } /> : ''}
                     <h4>Messages</h4>
                     <MessageList messages={this.state.messages} sendMessage={this.sendMessage} />
+                    <p id="contact">
+                        <small>
+                            Comments, Questions, Inqueries?<br />
+                            <a href="thomas@tehjr.com">thomas@tehjr.com</a>
+                        </small>
+                    </p>
                 </div>
             </div>
         );

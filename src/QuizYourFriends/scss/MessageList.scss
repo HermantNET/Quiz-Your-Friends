@@ -16,4 +16,24 @@
             }
         }
     }
+
+    form {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0.5rem;
+
+        input[type=text] {
+            flex: 1 0 75%;
+            margin: 0;
+            height: 2rem;
+        }
+
+        input[type=submit] {
+            flex: 1 0 25%;
+            margin: 0;
+            height: 2.5rem;
+            border-radius: 0 0.2rem 0.2rem;
+        }
+    }
 }

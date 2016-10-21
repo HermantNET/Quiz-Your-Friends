@@ -20,17 +20,17 @@ body {
     }
 
     .Options {
-        flex: 1 0 auto;
+        flex: 1 0 20%;
         background-color: $Bright;
     }
 
     .Main {
-        flex: 2 0 auto;
+        flex: 2 2 50%;
         background-color: $Light;
     }
 
     .UsersAndMessages {
-        flex: 1 0 auto;
+        flex: 1 0 30%;
         background-color: $Info;
     }
 }
@@ -39,7 +39,8 @@ body {
     font-weight: 500;
 }
 
-.Button {
+@mixin Button {
+    cursor: pointer;
     margin: 0.5rem;
     padding: 0.5rem;
     text-align: center;
@@ -50,10 +51,20 @@ body {
     -ms-user-select: none;
     user-select: none;
 
+    &:hover {
+        cursor: pointer;
+        background-color: rgba(255,255,255,0.5);
+        box-shadow: 0 0 0.1rem rgba(0,0,0,0.2);
+    }
+
     &:active {
         box-shadow: 0.05rem 0.1rem 0.2rem rgba(0,0,0,0.6) inset;
         background-color: rgba(0,0,0,0.2);
     }
+}
+
+.Button {
+    @include Button;
 }
 
 form {
@@ -75,11 +86,8 @@ form {
 }
 
 input[type=submit] {
-    width: 100%;
+    @include Button;
     border: none;
-    height: 3rem;
-    background-color: rgba(0,0,0,0.1);
-    border-radius: 0.2rem;
 
     &:active {
         border: none;
@@ -110,6 +118,10 @@ input[type=submit] {
         overflow-x: hidden;
         width: 90%;
     }
+}
+
+#contact {
+    text-align: right;
 }
 
 @media (min-width: 768px) {

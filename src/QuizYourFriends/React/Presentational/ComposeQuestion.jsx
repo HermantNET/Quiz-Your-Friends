@@ -3,6 +3,7 @@
 function ComposeQuestion(props) {
     return (
         <form action="" onSubmit={props.submit} className="ComposeQuestion">
+            <p>Questions submitted: {props.questionsSubmitted}</p>
             <label htmlFor="question">Question: </label>
             <textarea name="question" placeholder="Type your question here..." minLength="3" maxLength="140" required autoComplete="off" />
             <label htmlFor="correct">Correct: </label>

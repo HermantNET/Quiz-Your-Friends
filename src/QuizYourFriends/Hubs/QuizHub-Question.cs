@@ -24,6 +24,8 @@ namespace QuizYourFriends.Hubs
             if (existingQuestion == null)
             {
                 quiz.Questions.Add(newQuestion);
+                Clients.Group(quiz.Name).incrementQuestionCount();
+                Clients.OthersInGroup(quiz.Name).message("A message has been submitted");
             }
             // If user has already submitted a question, replace their previous question with the new one.
             else
@@ -59,8 +61,7 @@ namespace QuizYourFriends.Hubs
             {
                 // Send client the question and scrambled answers
                 Clients.Group(quiz.Name).question(question.Statement,
-                    JsonConvert.SerializeObject(ScrambleAnswers(question.CorrectAnswer, question.WrongAnswers)),
-                    quiz.CurrentQuestion + 1);
+                    JsonConvert.SerializeObject(ScrambleAnswers(question.CorrectAnswer, question.WrongAnswers)));
             }
         }
 
