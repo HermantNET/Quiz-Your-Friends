@@ -30,17 +30,17 @@ namespace QuizYourFriends.Models
 
         public Question(string conId, string question, string correct, string[] wrong)
         {
-            if (question.Length > 140)
+            if (question.Length >= 360)
             {
-                question = question.Substring(0, 140);
+                question = question.Substring(0, 360);
             }
 
-            if (correct.Length > 140)
+            if (correct.Length >= 140)
             {
-                correct = correct.Substring(0, 35);
+                correct = correct.Substring(0, 140);
             }
 
-            Array.ForEach(wrong, (w) => { if (w.Length > 140) w = w.Substring(0, 35); });
+            Array.ForEach(wrong, (w) => { if (w.Length >= 140) w = w.Substring(0, 140); });
 
             QuestionBy = conId;
             Statement = question;

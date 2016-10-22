@@ -147,7 +147,8 @@ input[type=submit] {
     }
 }
 
-.Question {
+.Question,
+.Button {
     -ms-word-wrap: break-word;
     word-wrap: break-word;
     overflow-wrap: break-word;
