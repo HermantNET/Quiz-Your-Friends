@@ -150,7 +150,8 @@ var QuizGameContainer = React.createClass({
                 isRight: false,
                 correctAnswer: '',
                 questionCount: 0,
-                isReady: false
+                isReady: false,
+                answered: false
 
             })
         }.bind(this);
@@ -226,7 +227,12 @@ var QuizGameContainer = React.createClass({
             question: [],
             answers: [],
             players: this.state.players.map((player) => { player.Score = 0; return player; }),
-            readyCount: 0
+            readyCount: 0,
+            isReady: false,
+            answered: false,
+            isRight: false,
+            correctAnswer: '',
+            questionCount: 0
         });
     },
 
@@ -264,7 +270,7 @@ var QuizGameContainer = React.createClass({
         return (
             <div className="App">
                 <div className="Options">
-                    <h2 className="Title">Quiz your Friends</h2>
+                    <h2 className="Title">Quizayy</h2>
                     <p className="ConnectedAs">Connected as: <span className="Heavy">{this.state.name}</span></p>
                     <div className="RoomState">{this.state.room == 'none' ? <p>Not in a room</p> : <p>Currently in room: <span className="Heavy">{this.state.room}</span></p> }</div>
                     <QuizMenu createNewQuiz={this.createNewQuiz}

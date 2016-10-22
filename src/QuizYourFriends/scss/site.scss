@@ -21,14 +21,19 @@ body {
         flex-direction: column;
 
         .adsbygoogle {
-            margin-top: 1rem;
+            margin-top: 4rem;
             align-self: center;
+            margin-bottom: 1rem;
         }
     }
 
     .Options {
         flex: 1 0 auto;
         background-color: $Bright;
+
+        .QuizMenu {
+            margin-bottom: 1rem;
+        }
     }
 
     .Main {
@@ -172,6 +177,10 @@ input[type=submit] {
 
         .Options {
             flex: 1 0 20%;
+
+            .QuizMenu {
+                margin-bottom: 5rem;
+            }
         }
 
         .Main {
