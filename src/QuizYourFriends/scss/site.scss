@@ -40,6 +40,14 @@ body {
     .UsersAndMessages {
         flex: 1 0 auto;
         background-color: $Info;
+
+        a:visited {
+            color: darken($Power, 20);
+        }
+
+        a:link {
+            color: $Power;
+        }
     }
 }
 
