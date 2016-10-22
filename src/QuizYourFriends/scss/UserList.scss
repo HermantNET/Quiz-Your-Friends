@@ -1,11 +1,11 @@
 ﻿.UserList {
+    display: table;
     width: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
-    max-height: 30vh;
+    height: 5rem;
 
     & > ul {
-        width: 100%;
 
         & > li {
             width: 75%;

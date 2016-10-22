@@ -63,7 +63,7 @@ namespace QuizYourFriends.Hubs
                 } else
                 {
                     Clients.OthersInGroup(quiz).message(player + ": " + (msg.Length > 140 ?
-                                                                            msg.Substring(0, 140) 
+                                                                            msg.Substring(0, 140)
                                                                             :
                                                                             msg
                                                                         ));

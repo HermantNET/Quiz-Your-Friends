@@ -6,10 +6,16 @@ function QuizMenu(props) {
            <div className="Button" onClick={props.createNewQuiz}>Create Quiz</div>
            <div className="Button" onClick={props.joinQuiz}>Join Quiz</div>
            {props.inRoom ?
-                <div>
-                    <div className="Button" onClick={props.readyUp }>Ready Up</div>
+                (!props.started ?
+                    <div>
+                        <div className={"Button" + (props.isReady ? " Button-Clicked" : '' )} onClick={props.readyUp }>{props.isReady ? 'Unready' : 'Ready Up'}</div>
+                        <div className="Button" onClick={props.leaveQuiz}>Leave Quiz</div>
+                    </div>
+                    :
                     <div className="Button" onClick={props.leaveQuiz}>Leave Quiz</div>
-                </div> : ''
+                )
+                :
+                ''
            }
        </div>
     );

@@ -17,6 +17,13 @@ body {
 
     & > div {
         padding: 1rem;
+        display: flex;
+        flex-direction: column;
+
+        .adsbygoogle {
+            margin-top: 1rem;
+            align-self: center;
+        }
     }
 
     .Options {
@@ -25,7 +32,8 @@ body {
     }
 
     .Main {
-        flex: 2 2 auto;
+        display: block;
+        flex: 2 0 auto;
         background-color: $Light;
     }
 
@@ -43,6 +51,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .Heavy {
     font-weight: 700;
+}
+
+@mixin Button-Clicked {
+    box-shadow: 0.05rem 0.1rem 0.2rem rgba(0,0,0,0.6) inset;
+    background-color: rgba(0,0,0,0.2);
 }
 
 @mixin Button {
@@ -64,13 +77,21 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     &:active {
-        box-shadow: 0.05rem 0.1rem 0.2rem rgba(0,0,0,0.6) inset;
-        background-color: rgba(0,0,0,0.2);
+        @include Button-Clicked;
     }
 }
 
 .Button {
     @include Button;
+}
+
+.Button-Clicked {
+    @include Button-Clicked;
+
+    &:hover {
+        background-color: rgba(0,0,0,0.4);
+        box-shadow: 0.05rem 0.1rem 0.2rem rgba(0,0,0,0.9) inset;
+    }
 }
 
 form {
@@ -127,6 +148,8 @@ input[type=submit] {
 }
 
 .Question {
+    -ms-word-wrap: break-word;
+    word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
@@ -134,7 +157,7 @@ input[type=submit] {
     text-align: right;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .App {
         flex-direction: row;
 

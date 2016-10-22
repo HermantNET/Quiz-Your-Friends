@@ -9,18 +9,21 @@ var Question = require('.././Presentational/Question.jsx');
 var QuizEnd = require('.././Presentational/QuizEnd.jsx');
 var NewQuizMenu = require('.././Presentational/NewQuizMenu.jsx');
 var PublicQuizzes = require('.././Presentational/PublicQuizzes.jsx');
+var AnsweredQuestion = require('.././Presentational/AnsweredQuestion.jsx');
+var Ad = require('.././Presentational/Ad.jsx');
 
 var QuizGameContainer = React.createClass({
     getInitialState: function () {
         return {
             hub: $.connection.quizHub,
             connected: false,
+            inRoom: false,
             publicQuizzes: null,
             createQuiz: false,
             getQuestions: false,
             started: false,
             ended: false,
-            inRoom: false,
+            isReady: false,
             readyCount: 0,
             room: 'none',
             maxPlayers: 0,
@@ -32,7 +35,9 @@ var QuizGameContainer = React.createClass({
             questionCount: 0,
             question: 'none',
             answers: [],
-            answered: false
+            answered: false,
+            isRight: false,
+            correctAnswer: 'Loading...'
         }
     },
     componentWillMount: function () {
@@ -110,7 +115,16 @@ var QuizGameContainer = React.createClass({
             this.setState({
                 question: question,
                 answers: JSON.parse(answers),
-                answered: false
+                answered: false,
+                isRight: false,
+                correctAnswer: 'Loading...'
+            });
+        }.bind(this);
+
+        this.state.hub.client.isRight = function (bool, correct) {
+            this.setState({
+                isRight: bool,
+                correctAnswer: correct
             });
         }.bind(this);
 
@@ -132,7 +146,12 @@ var QuizGameContainer = React.createClass({
                 maxPlayers: 0,
                 answers: [],
                 players: [],
-                playersFinal: []
+                playersFinal: [],
+                isRight: false,
+                correctAnswer: '',
+                questionCount: 0,
+                isReady: false
+
             })
         }.bind(this);
         // End Client side response code for SignalR
@@ -159,6 +178,9 @@ var QuizGameContainer = React.createClass({
     },
     readyUp: function () {
         ServerRoutes.ReadyUp(this.state.hub);
+        this.setState({
+            isReady: !this.state.isReady
+        })
     },
     playersReady: function () {
         ServerRoutes.PlayersReady(this.state.hub);
@@ -222,13 +244,15 @@ var QuizGameContainer = React.createClass({
         else if (this.state.getQuestions && !this.state.started) {
             view = <ComposeQuestion submit={this.submitQuestion} questionsSubmitted={this.state.questionCount} />
         }
-        else if (this.state.started && !this.state.ended) {
+        else if (this.state.started && !this.state.ended && !this.state.answered) {
             view = <Question submitAnswer={this.submitAnswer}
                              question={this.state.question}
                              answers={this.state.answers}
                              questionCount={this.state.questionCount}
-                             currentQuestionNum={this.state.currentQuestionNum}
-                           />
+                             currentQuestionNum={this.state.currentQuestionNum} />
+        }
+        else if (this.state.started && !this.state.ended && this.state.answered) {
+            view = <AnsweredQuestion correct={this.state.correctAnswer} isRight={this.state.isRight} />
         }
         else if (this.state.ended) {
             view = <QuizEnd players={this.state.playersFinal} playAgain={this.playAgain } />;
@@ -247,12 +271,16 @@ var QuizGameContainer = React.createClass({
                               joinQuiz={() => this.joinQuiz(null)}
                               leaveQuiz={this.leaveQuiz}
                               readyUp={this.readyUp}
-                              inRoom={this.state.inRoom} />
+                              inRoom={this.state.inRoom}
+                              isReady={this.state.isReady}
+                              started={this.state.getQuestions}
+                    />
+                    <Ad adStyle={{ display: 'inline-block', width: '320px', height: '100px', textAlign: 'center' }} adClient="ca-pub-9195714093896960" adSlot="7042347011" />
                 </div>
                 <div className="Main">
                     {this.state.createQuiz ? <NewQuizMenu createQuiz={this.createQuiz} name={this.state.name } /> : ''}
                     {view}
-                    {this.state.inRoom ? '' : <PublicQuizzes quizzes={this.state.publicQuizzes} joinQuiz={this.joinQuiz} refresh={this.getPublicQuizzes} /> }
+                    {this.state.inRoom ? '' : <PublicQuizzes quizzes={this.state.publicQuizzes} joinQuiz={this.joinQuiz} refresh={this.getPublicQuizzes } /> }
                 </div>
                 <div className="UsersAndMessages">
                     {this.state.inRoom ? <UserList players={this.state.players} max={this.state.maxPlayers } /> : ''}
@@ -264,6 +292,7 @@ var QuizGameContainer = React.createClass({
                             <a href="thomas@tehjr.com">thomas@tehjr.com</a>
                         </small>
                     </p>
+                    <Ad adStyle={{ display: 'inline-block', width: '336px', height: '280px', textAlign: 'center' }} adClient="ca-pub-9195714093896960" adSlot="4088880613" />
                 </div>
             </div>
         );

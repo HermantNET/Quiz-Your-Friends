@@ -25,12 +25,12 @@ namespace QuizYourFriends.Hubs
             {
                 quiz.Questions.Add(newQuestion);
                 Clients.Group(quiz.Name).incrementQuestionCount();
-                Clients.OthersInGroup(quiz.Name).message("A message has been submitted");
+                Clients.OthersInGroup(quiz.Name).message("A question has been submitted");
             }
             // If user has already submitted a question, replace their previous question with the new one.
             else
             {
-                existingQuestion = newQuestion;
+                quiz.Questions.Insert(quiz.Questions.IndexOf(existingQuestion), newQuestion);
             }
 
             // Start the quiz if all users have submitted a question
@@ -87,12 +87,13 @@ namespace QuizYourFriends.Hubs
                     {
                         player.Score += 50;
                         PlayersInLobby(quiz);
+                        Clients.Caller.isRight(true, string.Format("The correct answer was '{0}.'", question.CorrectAnswer));
                         MessageGroup(player.Name + " was correct", quiz.Name);
                     }
                     else
                     {
+                        Clients.Caller.isRight(false, string.Format("The correct answer was '{0}.'", question.CorrectAnswer));
                         MessageGroup(player.Name + " was wrong", quiz.Name);
-                        Clients.Caller.message(string.Format("The correct answer was '{0}'", question.CorrectAnswer));
                     }
                 }
 
