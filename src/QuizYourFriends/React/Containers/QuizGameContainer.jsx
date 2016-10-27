@@ -281,7 +281,7 @@ var QuizGameContainer = React.createClass({
                               isReady={this.state.isReady}
                               started={this.state.getQuestions}
                     />
-                    <Ad adStyle={{ display: 'inline-block', width: '320px', height: '100px', textAlign: 'center' }} adClient="ca-pub-9195714093896960" adSlot="7042347011" />
+                    <Ad adStyle={{ display: 'inline-block', width: '320px', height: '100px' }} adClient="ca-pub-9195714093896960" adSlot="7042347011" />
                 </div>
                 <div className="Main">
                     {this.state.createQuiz ? <NewQuizMenu createQuiz={this.createQuiz} name={this.state.name } /> : ''}
@@ -295,10 +295,11 @@ var QuizGameContainer = React.createClass({
                     <p id="contact">
                         <small>
                             Comments, Questions, Inqueries?<br />
-                            <a href="thomas@tehjr.com">thomas@tehjr.com</a>
+                            <a href="thomas@tehjr.com">thomas@tehjr.com</a><br />
+                            <a href="https://www.google.com/policies/privacy/partners/">Privacy Policy</a>
                         </small>
                     </p>
-                    <Ad adStyle={{ display: 'inline-block', width: '336px', height: '280px', textAlign: 'center' }} adClient="ca-pub-9195714093896960" adSlot="4088880613" />
+                    <Ad adStyle={{ display: 'inline-block', width: '336px', height: '280px' }} adClient="ca-pub-9195714093896960" adSlot="4088880613" />
                 </div>
             </div>
         );
