@@ -1,0 +1,12 @@
+A user opens the website in their browser. They see a login screen.
+They login. Now the user sees screen asking them to enter a lobby name.
+They enter a lobby name. They are taken to a Quiz screen. They see a list
+of users in the lobby on the left side of the screen. They click
+a ready button. Above the list of users a counter displays how many players
+are ready. Once everyone in the lobby clicks ready, they see a new screen.
+They are asked to enter a question, one correct answer and three wrong
+answers. They submit their question. Once everyone submitted their
+questions, the game starts. They answer questions and see the other
+players scores as well as their own on the left. The game ends after all
+questions have been answered. A new screen appears showing the results.
+They click finished and are taken back to the ready menu.
